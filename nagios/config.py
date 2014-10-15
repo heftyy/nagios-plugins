@@ -1,10 +1,13 @@
 import ConfigParser
-
+import os
 
 class PluginConfig:
     def __init__(self):
+        print "PATH = %s" % os.path.dirname(__file__)
+
         config = ConfigParser.ConfigParser()
-        config.readfp(open(r'plugins.conf'))
+        f = open(r'plugins.conf')
+        config.readfp(f)
         self.api_ip = config.get('API', 'ip')
         self.api_port = config.get('API', 'port')
         self.api_notification_route = config.get('API', 'notification_route')
