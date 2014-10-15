@@ -4,6 +4,7 @@ import os
 class PluginConfig:
     def __init__(self):
         print "PATH = %s" % os.path.dirname(__file__)
+        print "PATH = %s" % os.getcwd()
 
         config = ConfigParser.ConfigParser()
         f = open(r'plugins.conf')
