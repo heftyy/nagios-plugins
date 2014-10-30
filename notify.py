@@ -18,6 +18,7 @@ class NotifyPlugin(NagiosPlugin):
         data['ip'] = host.address
         data['state'] = host.state
         data['output'] = host.output
+        data['type'] = options.notification_type
 
         resp = requests.post(self.config.api_notification_url, params=data)
 

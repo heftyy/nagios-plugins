@@ -43,8 +43,8 @@ class NagiosPlugin(object):
 
         host = NagiosHost(options)
 
-        if not options.host_address:
-            parser.error('You must specify a host address.')
+        if not options.host_address and not options.node_id:
+            parser.error('You must specify a host address or node id.')
 
         try:
             self.run(options, host)

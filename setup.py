@@ -20,5 +20,5 @@ setup(name = "appname",
         'console_scripts': [
             'notify = plugins.notify:notify',
         ]
-    }, requires=['requests']
+    }, requires=['requests', 'pysnmp']
 ) 
