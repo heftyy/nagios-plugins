@@ -2,67 +2,54 @@
 
 import time
 from nagios.checkPlugin import CheckPlugin
+from nagios.nagiosReturnValues import NagiosReturnValues
 
-IF_IN_OCTETS = '1.3.6.1.2.1.2.2.1.10'
-IF_OUT_OCTETS = '1.3.6.1.2.1.2.2.1.16'
-
-IF_HC_IN_OCTETS = '1.3.6.1.2.1.31.1.1.1.6'
-IF_HC_OUT_OCTETS = '1.3.6.1.2.1.31.1.1.1.10'
-
-#wait between checking octets for seconds
-TRANSFER_UPDATE_INTERVAL = 10
+IF_OPERATIONAL_STATUS = '1.3.6.1.2.1.2.2.1.8'
 
 
 class CheckPort(CheckPlugin):
 
-    @staticmethod
-    def bytes_to_mb(transfer_in_bytes):
-        return float(transfer_in_bytes) / (1000 * 1000)
-
-    def get_transfer(self, itf, snmp_version):
+    def get_port_status(self, itf):
         itf_index = itf['itfIndex']
 
-        itf_oid = "%s.%s" % (IF_IN_OCTETS, itf_index)
+        request_oid = "%s.%s" % (IF_OPERATIONAL_STATUS, itf_index)
 
-        octets_start = self.snmp_requester.do_get(itf_oid)
-        if octets_start and len(octets_start) == 1:
-            octets_start = octets_start[0][1]
+        itf_operational_status = self.snmp_requester.do_get(request_oid)
+        if itf_operational_status and len(itf_operational_status) == 1:
+            itf_operational_status = itf_operational_status[0][1]
         else:
-            return 0
+            raise ValueError("didn't get a value from the device for oid %s" % request_oid)
 
-        time.sleep(TRANSFER_UPDATE_INTERVAL)
-        octets_end = self.snmp_requester.do_get(itf_oid)
-        if octets_end and len(octets_end) == 1:
-            octets_end = octets_end[0][1]
-        else:
-            return 0
-
-        octets_diff = octets_end - octets_start
-        transfer = octets_diff / TRANSFER_UPDATE_INTERVAL
-
-        return transfer
+        return itf_operational_status
 
     @staticmethod
-    def validate_transfer(itf, transfer):
-        if int(itf['min']) <= transfer <= int(itf['max']):
-            print "transfer: %d is valid" % transfer
+    def validate_status(itf, status):
+        if itf['oper_status'] == status:
+            print 'port %s has the required status, OK' % itf['itfIndex']
             return True
         else:
-            print "transfer: %d is invalid" % transfer
+            print 'port %s has the wrong status, BAD' % itf['itfIndex']
             return False
 
     def check(self, settings):
-        interfaces = settings.get_interfaces()
-        snmp_settings = settings.get_snmp_config()
+        interfaces = settings.get_port_interfaces()
+
+        if not interfaces:
+            return NagiosReturnValues.state_ok
+
         for itf in interfaces:
-            transfer = self.get_transfer(itf, snmp_settings['snmpVersion'])
-            if not self.validate_transfer(itf, transfer):
-                return 1
+            try:
+                status = self.get_port_status(itf)
+            except ValueError as e:
+                print "ValueError %s" % e
+                return NagiosReturnValues.state_unknown
 
-            print "transfer on itf: %s = %d B" % (itf['itfIndex'], transfer)
-            print "transfer on itf: %s = %f MB" % (itf['itfIndex'], self.bytes_to_mb(transfer))
+            if not self.validate_status(itf, status):
+                return NagiosReturnValues.state_critical
 
-        return 0
+            print "status on itf: %s = %d" % (itf['itfIndex'], status)
+
+        return NagiosReturnValues.state_ok
 
 
 if __name__ == '__main__':

@@ -14,14 +14,13 @@ class CheckPlugin(NagiosPlugin):
         self.snmp_requester = {}
 
     def run(self, options, host):
-        print('host id %s' % host.node_id)
 
         if not host.node_id:
             print "Error, host node_id is missing"
             return 1
 
         url = "%s/%s" % (self.config.api_nagios_settings_url, host.node_id)
-        resp = requests.get(url)
+        resp = requests.get(url, params=None)
 
         settings = NagiosSettings(resp.content)
 

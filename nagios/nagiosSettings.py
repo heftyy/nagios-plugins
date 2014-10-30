@@ -6,7 +6,9 @@ import json
 class NagiosSettings(object):
     def __init__(self, settings_string):
         self.device = json.loads(settings_string, object_hook=self._decode_dict)
-        self.settings = json.loads(self.device['settingsString'], object_hook=self._decode_dict)
+
+        if 'settingsString' in self.device:
+            self.settings = json.loads(self.device['settingsString'], object_hook=self._decode_dict)
 
     def _decode_list(self, data):
         rv = []
@@ -35,34 +37,49 @@ class NagiosSettings(object):
         return rv
 
     def get_node_id(self):
+        if 'nodeId' not in self.device:
+            return
+
         return int(self.device['nodeId'])
 
     def get_ip_address(self):
-        if not self.device['node']:
+        if 'node' not in self.device:
+            return
+
+        if 'ipaddr' not in self.device['node']:
             return
 
         return self.device['node']['ipaddr']
 
     def get_snmp_config(self):
-        if not self.device['node']:
+        if 'node' not in self.device:
             return
 
-        if not self.device['node']['netDevice']:
+        if 'netDevice' not in self.device['node']:
             return
 
-        if not self.device['node']['netDevice']['snmpProfile']:
+        if 'snmpProfile' not in self.device['node']['netDevice']:
             return
 
         return self.device['node']['netDevice']['snmpProfile']
 
-    def get_interfaces(self):
-        if not self.settings['port']:
-            print "ports array was missing in the json"
+    def get_setting(self, itf_type):
+        if itf_type not in self.settings:
+            print "%s array was missing in the json" % itf_type
             return
 
-        interfaces = self.settings['port']
+        interfaces = self.settings[itf_type]
         if len(interfaces) > 0:
             return interfaces
         else:
-            print "ports array was empty"
+            print "%s array was empty" % itf_type
             return
+
+    def get_traffic_interfaces(self):
+        return self.get_setting('traffic')
+
+    def get_port_interfaces(self):
+        return self.get_setting('port')
+
+    def get_switch_heat(self):
+        return self.get_setting('switch_heat')
