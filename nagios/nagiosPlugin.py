@@ -1,5 +1,6 @@
 import argparse
 import sys
+import traceback
 from host import NagiosHost
 from config import PluginConfig
 
@@ -47,9 +48,12 @@ class NagiosPlugin(object):
             parser.error('You must specify a host address or node id.')
 
         try:
-            self.run(options, host)
-            sys.exit()
+            return_value = self.run(options, host)
+            sys.exit(return_value)
+        except SystemExit, e:
+            sys.exit(e)
         except Exception, e:
+            print traceback.format_exc()
             print e.message
             sys.exit(e)
 

@@ -32,12 +32,14 @@ class SnmpRequester(object):
 
     def check_snmp_alive(self):
         if self.do_get(ping_oid):
+            print 'SNMP connection established'
             return True
         else:
+            print 'ERROR, SNMP connection failed'
             return False
 
     def get_snmp_target(self):
-        community_data = cmdgen.CommunityData(self.community)
+        community_data = cmdgen.CommunityData(self.community, mpModel=self.version)
         if self.version == 0:
             community_data.mpModel = 0
 
@@ -58,10 +60,18 @@ class SnmpRequester(object):
                 )
                 )
             else:
+                if var_binds is None:
+                    return
+
+                result = {}
+
                 for name, val in var_binds:
                     if isinstance(val, NoSuchObject) or isinstance(val, NoSuchInstance):
-                        var_binds[name] = None
-                return var_binds
+                        #var_binds[name] = None
+                        continue
+                    result[name] = val
+
+                return result
 
     @staticmethod
     def check_for_errors_walk(error_indication, error_status, error_index, var_binds):
@@ -75,11 +85,21 @@ class SnmpRequester(object):
                 )
                 )
             else:
+                if var_binds is None:
+                    return
+
+                result = {}
+
                 for row in var_binds:
+                    result_row = {}
                     for name, val in row:
                         if isinstance(val, NoSuchObject) or isinstance(val, NoSuchInstance):
-                            row[name] = None
-                return var_binds
+                            #row[name] = None
+                            continue
+                        result[name] = val
+                    #result.append(result_row)
+
+                return result
 
     def do_get(self, oid):
         cmd_gen = cmdgen.CommandGenerator()
@@ -104,14 +124,12 @@ class SnmpRequester(object):
 
         var_binds = self.check_for_errors_walk(error_indication, error_status, error_index, var_binds)
 
-        result = []
+        result = {}
 
         if var_binds:
-            for row in var_binds:
-                for oid, value in row:
-                    if oid.prettyPrint().startswith(walk_oid):
-                        tup2 = (oid, value)
-                        result.append(tup2)
+            for oid, value in var_binds.items():
+                if oid.prettyPrint().startswith(walk_oid.prettyPrint()):
+                    result[oid] = value
 
         return result
 

@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import time
+from pysnmp.proto.rfc1902 import ObjectName
 
 from nagios.checkPlugin import CheckPlugin
 from nagios.nagiosReturnValues import NagiosReturnValues
@@ -10,7 +11,7 @@ IF_IN_OCTETS = '1.3.6.1.2.1.2.2.1.10'
 IF_OUT_OCTETS = '1.3.6.1.2.1.2.2.1.16'
 
 IF_HC_IN_OCTETS = '1.3.6.1.2.1.31.1.1.1.6'
-IF_HC_OUT_OCTETS = '1.3.6.1.2.1.31.1.1.1.104'
+IF_HC_OUT_OCTETS = '1.3.6.1.2.1.31.1.1.1.10'
 
 #wait between checking octets for seconds
 TRAFFIC_UPDATE_INTERVAL = 5
@@ -41,18 +42,18 @@ class CheckTraffic(CheckPlugin):
         if not traffic_oid:
             raise ValueError("error, the correct oid for request could not be found for itf: %s" % itf['itfIndex'])
 
-        request_oid = "%s.%s" % (traffic_oid, itf_index)
+        request_oid = ObjectName("%s.%s" % (traffic_oid, itf_index))
 
         octets_start = self.snmp_requester.do_get(request_oid)
         if octets_start and len(octets_start) == 1:
-            octets_start = octets_start[0][1]
+            octets_start = octets_start[request_oid]
         else:
             raise ValueError("didn't get a value from the device for oid %s" % request_oid)
 
         time.sleep(TRAFFIC_UPDATE_INTERVAL)
         octets_end = self.snmp_requester.do_get(request_oid)
         if octets_end and len(octets_end) == 1:
-            octets_end = octets_end[0][1]
+            octets_end = octets_end[request_oid]
         else:
             raise ValueError("didn't get a value from the device for oid %s" % request_oid)
 

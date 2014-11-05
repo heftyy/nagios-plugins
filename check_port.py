@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import time
+from pysnmp.proto.rfc1902 import ObjectName
 from nagios.checkPlugin import CheckPlugin
 from nagios.nagiosReturnValues import NagiosReturnValues
 
@@ -12,11 +13,11 @@ class CheckPort(CheckPlugin):
     def get_port_status(self, itf):
         itf_index = itf['itfIndex']
 
-        request_oid = "%s.%s" % (IF_OPERATIONAL_STATUS, itf_index)
+        request_oid = ObjectName("%s.%s" % (IF_OPERATIONAL_STATUS, itf_index))
 
         itf_operational_status = self.snmp_requester.do_get(request_oid)
         if itf_operational_status and len(itf_operational_status) == 1:
-            itf_operational_status = itf_operational_status[0][1]
+            itf_operational_status = itf_operational_status[request_oid]
         else:
             raise ValueError("didn't get a value from the device for oid %s" % request_oid)
 

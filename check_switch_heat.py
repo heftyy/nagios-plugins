@@ -1,8 +1,10 @@
 #!/usr/bin/python
 
-import time
+from pysnmp.proto.rfc1902 import ObjectName
+
 from nagios.checkPlugin import CheckPlugin
 from nagios.nagiosReturnValues import NagiosReturnValues
+
 
 JUNIPER_HEAT = '1.3.6.1.4.1.2636.3.1.13.1.7'
 
@@ -10,13 +12,13 @@ JUNIPER_HEAT = '1.3.6.1.4.1.2636.3.1.13.1.7'
 class CheckSwitchHeat(CheckPlugin):
 
     def get_switch_heat(self):
-        request_oid = JUNIPER_HEAT
+        request_oid = ObjectName(JUNIPER_HEAT)
 
         heat_values = []
 
         heat_result = self.snmp_requester.do_walk(request_oid)
         if heat_result and len(heat_result) > 0:
-            for oid, value in heat_result:
+            for oid, value in heat_result.items():
                 if value is None or value == 0:
                     continue
                 else:
@@ -29,33 +31,13 @@ class CheckSwitchHeat(CheckPlugin):
 
         return heat_values
 
-    @staticmethod
-    def validate_heat(heat_settings, temperatures):
-        warning = critical = None
+    def validate_heat(self, heat_settings, temperatures):
 
-        if 'warning' in heat_settings:
-            warning = heat_settings['warning']
+        temp_results = []
+        for temp in temperatures:
+            temp_results.append(self.validate_value_gt(temp, heat_settings))
 
-        if 'critical' in heat_settings:
-            critical = heat_settings['critical']
-
-        if not critical and not warning:
-            return NagiosReturnValues.state_unknown
-
-        if critical:
-            for temp in temperatures:
-                if temp >= critical:
-                    print "temperature is above critical, ERROR"
-                    return NagiosReturnValues.state_critical
-
-        if warning:
-            for temp in temperatures:
-                if temp >= warning:
-                    print "temperature is above warning, WARNING"
-                    return NagiosReturnValues.state_warning
-
-        print "all temperatures are ok"
-        return NagiosReturnValues.state_ok
+        return self.get_device_status(temp_results)
 
     def check(self, settings):
         switch_heat = settings.get_switch_heat()
@@ -71,10 +53,11 @@ class CheckSwitchHeat(CheckPlugin):
                 print "ValueError %s" % e
                 return NagiosReturnValues.state_unknown
 
-            if not self.validate_heat(heat_settings, temperatures):
-                return NagiosReturnValues.state_critical
+            validate = self.validate_heat(heat_settings, temperatures)
+            if validate != NagiosReturnValues.state_ok:
+                return validate
 
-        return 0
+        return NagiosReturnValues.state_ok
 
 
 if __name__ == '__main__':

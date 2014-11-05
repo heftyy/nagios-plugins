@@ -68,9 +68,9 @@ class NagiosSettings(object):
             print "%s array was missing in the json" % itf_type
             return
 
-        interfaces = self.settings[itf_type]
-        if len(interfaces) > 0:
-            return interfaces
+        result = self.settings[itf_type]
+        if len(result) > 0:
+            return result
         else:
             print "%s array was empty" % itf_type
             return
@@ -83,3 +83,15 @@ class NagiosSettings(object):
 
     def get_switch_heat(self):
         return self.get_setting('switch_heat')
+
+    def get_sensors(self):
+        return self.get_setting('sensors')
+
+    def get_ups_list(self):
+        return self.get_setting('ups_list')
+
+    def get_cmts_cards(self):
+        return self.get_setting('cmts_cards')
+
+    def get_cmts_snr(self):
+        return self.get_setting('cmts_snr')

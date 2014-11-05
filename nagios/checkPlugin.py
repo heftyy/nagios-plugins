@@ -1,8 +1,11 @@
 #!/usr/bin/python
 
+import sys
+
 import requests
 
 from nagios.nagiosPlugin import NagiosPlugin
+from nagios.nagiosReturnValues import NagiosReturnValues
 from nagios.nagiosSettings import NagiosSettings
 from nagios.snmpRequester import SnmpRequester
 
@@ -12,6 +15,109 @@ class CheckPlugin(NagiosPlugin):
     def __init__(self):
         super(CheckPlugin, self).__init__()
         self.snmp_requester = {}
+
+    @staticmethod
+    def is_number(text):
+        try:
+            float(text)
+            return True
+        except ValueError:
+            return False
+
+    @staticmethod
+    def validate_value_gt(value, data):
+        warning = critical = None
+
+        if 'warning' in data:
+            warning = data['warning']
+
+        if 'critical' in data:
+            critical = data['critical']
+
+        if not critical and not warning:
+            return NagiosReturnValues.state_unknown
+
+        if CheckPlugin.is_number(value):
+            number = float(value)
+            if critical:
+                if number >= critical:
+                    print 'value %s is above critical' % number
+                    return NagiosReturnValues.state_critical
+
+            if warning:
+                if number >= warning:
+                    print 'value %s is above warning' % number
+                    return NagiosReturnValues.state_warning
+
+        else:
+            if critical:
+                if value == critical:
+                    print 'value %s is critical' % value
+                    return NagiosReturnValues.state_critical
+
+            if warning:
+                if value == warning:
+                    print 'value %s is warning' % value
+                    return NagiosReturnValues.state_warning
+
+        print 'value %s is ok' % value
+        return NagiosReturnValues.state_ok
+
+    @staticmethod
+    def validate_value_lt(value, data):
+        warning = critical = None
+
+        if 'warning' in data:
+            warning = data['warning']
+
+        if 'critical' in data:
+            critical = data['critical']
+
+        if not critical and not warning:
+            return NagiosReturnValues.state_unknown
+
+        if CheckPlugin.is_number(value):
+            number = float(value)
+            if critical:
+                if number <= critical:
+                    print 'value %s is below critical' % number
+                    return NagiosReturnValues.state_critical
+            if warning:
+                if number <= warning:
+                    print 'value %s is below warning' % number
+                    return NagiosReturnValues.state_warning
+        else:
+            if critical:
+                if value == critical:
+                    print 'value %s is critical' % value
+                    return NagiosReturnValues.state_critical
+
+            if warning:
+                if value == warning:
+                    print 'value %s is warning' % value
+                    return NagiosReturnValues.state_warning
+
+        print 'value %s is ok' % value
+        return NagiosReturnValues.state_ok
+
+    @staticmethod
+    def get_device_status(*args):
+        if len(args) == 1 and isinstance(args[0], list):
+            args = args[0]
+
+        for arg in args:
+            if arg and arg == NagiosReturnValues.state_critical:
+                return NagiosReturnValues.state_critical
+
+        for arg in args:
+            if arg and arg == NagiosReturnValues.state_warning:
+                return NagiosReturnValues.state_warning
+
+        for arg in args:
+            if arg and arg == NagiosReturnValues.state_unknown:
+                return NagiosReturnValues.state_unknown
+
+        return NagiosReturnValues.state_ok
 
     def run(self, options, host):
 
@@ -32,7 +138,8 @@ class CheckPlugin(NagiosPlugin):
         )
 
         if self.snmp_requester.init_connection():
-            self.check(settings)
+            script_return_value = self.check(settings)
+            sys.exit(script_return_value)
 
     def check(self, settings):
         raise NotImplementedError("Please implement your plugin (check method).")
