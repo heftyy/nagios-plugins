@@ -39,10 +39,10 @@ class CheckUps(CheckPlugin):
         temp_valid = voltage_valid = None
 
         if 'temperature' in ups:
-            temp_valid = self.validate_value_gt(value['temperature'], ups['temperature'])
+            temp_valid = self.validate_value_lt(value['temperature'], ups['temperature'])
 
         if 'voltage' in ups:
-            voltage_valid = self.validate_value_lt(value['voltage'], ups['voltage'])
+            voltage_valid = self.validate_value_gt(value['voltage'], ups['voltage'])
 
         return self.get_device_status(temp_valid, voltage_valid)
 

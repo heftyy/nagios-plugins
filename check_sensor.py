@@ -21,7 +21,7 @@ class CheckSensor(CheckPlugin):
 
     def validate_status(self, sensor, value):
 
-        return self.validate_value_gt(value, sensor)
+        return self.validate_value_lt(value, sensor)
 
     def check(self, settings):
         sensors = settings.get_sensors()

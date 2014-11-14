@@ -16,6 +16,16 @@ class Interface():
         self.fb_name = self.get_fb_name(oid)
         self.snr = None
 
+    def get_json(self, **kwargs):
+        json = {
+            "index": int(self.index),
+            "fb_name": self.fb_name,
+            "snr": int(self.snr)
+        }
+        for key, value in kwargs.iteritems():
+            json[key] = value
+        return json
+
     @staticmethod
     def get_fb_name(oid):
         if isinstance(oid, ObjectName):
@@ -78,7 +88,11 @@ class CheckSwitchHeat(CheckPlugin):
 
         for itf in interfaces.values():
             if itf.snr:
-                status = self.validate_value_lt(itf.snr, cmts_snr)
+                status = self.validate_value_gt(itf.snr, cmts_snr)
+
+                if status != NagiosReturnValues.state_ok:
+                    print "!%s" % itf.get_json(nagios_status=status)
+
                 status_list.append(status)
 
         return self.get_device_status(status_list)

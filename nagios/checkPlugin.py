@@ -24,15 +24,26 @@ class CheckPlugin(NagiosPlugin):
         except ValueError:
             return False
 
+    def validate_value(self, value, settings):
+        if "type" in settings:
+            validate_type = settings["type"]
+            if validate_type == "lt":
+                return self.validate_value_lt(value, settings)
+            elif validate_type == "gt":
+                return self.validate_value_gt(value, settings)
+
+        return NagiosReturnValues.state_unknown
+
+
     @staticmethod
-    def validate_value_gt(value, data):
+    def validate_value_lt(value, settings):
         warning = critical = None
 
-        if 'warning' in data:
-            warning = data['warning']
+        if 'warning' in settings:
+            warning = settings['warning']
 
-        if 'critical' in data:
-            critical = data['critical']
+        if 'critical' in settings:
+            critical = settings['critical']
 
         if not critical and not warning:
             return NagiosReturnValues.state_unknown
@@ -64,14 +75,14 @@ class CheckPlugin(NagiosPlugin):
         return NagiosReturnValues.state_ok
 
     @staticmethod
-    def validate_value_lt(value, data):
+    def validate_value_gt(value, settings):
         warning = critical = None
 
-        if 'warning' in data:
-            warning = data['warning']
+        if 'warning' in settings:
+            warning = settings['warning']
 
-        if 'critical' in data:
-            critical = data['critical']
+        if 'critical' in settings:
+            critical = settings['critical']
 
         if not critical and not warning:
             return NagiosReturnValues.state_unknown
@@ -127,6 +138,10 @@ class CheckPlugin(NagiosPlugin):
 
         url = "%s/%s" % (self.config.api_nagios_settings_url, host.node_id)
         resp = requests.get(url, params=None)
+
+        if resp.status_code != 200:
+            print resp.content
+            sys.exit(0)
 
         settings = NagiosSettings(resp.content)
 

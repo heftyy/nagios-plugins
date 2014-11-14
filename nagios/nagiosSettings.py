@@ -1,3 +1,5 @@
+from nagios.json_dict_decode import _decode_dict
+
 __author__ = 'szymon'
 
 import json
@@ -5,36 +7,10 @@ import json
 
 class NagiosSettings(object):
     def __init__(self, settings_string):
-        self.device = json.loads(settings_string, object_hook=self._decode_dict)
+        self.device = json.loads(settings_string, object_hook=_decode_dict)
 
         if 'settingsString' in self.device:
             self.settings = json.loads(self.device['settingsString'], object_hook=self._decode_dict)
-
-    def _decode_list(self, data):
-        rv = []
-        for item in data:
-            if isinstance(item, unicode):
-                item = item.encode('utf-8')
-            elif isinstance(item, list):
-                item = self._decode_list(item)
-            elif isinstance(item, dict):
-                item = self._decode_dict(item)
-            rv.append(item)
-        return rv
-
-    def _decode_dict(self, data):
-        rv = {}
-        for key, value in data.iteritems():
-            if isinstance(key, unicode):
-                key = key.encode('utf-8')
-            if isinstance(value, unicode):
-                value = value.encode('utf-8')
-            elif isinstance(value, list):
-                value = self._decode_list(value)
-            elif isinstance(value, dict):
-                value = self._decode_dict(value)
-            rv[key] = value
-        return rv
 
     def get_node_id(self):
         if 'nodeId' not in self.device:
@@ -95,3 +71,9 @@ class NagiosSettings(object):
 
     def get_cmts_snr(self):
         return self.get_setting('cmts_snr')
+
+    def get_bgp(self):
+        return self.get_setting('bgp')
+
+    def get_server(self):
+        return self.get_setting('server')

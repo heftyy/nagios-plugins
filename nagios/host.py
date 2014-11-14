@@ -1,6 +1,7 @@
 import os
 import pxssh
 
+
 class NagiosHost():
     def __init__(self, options):
         self.address = options.host_address

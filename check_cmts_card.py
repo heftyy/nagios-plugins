@@ -78,11 +78,11 @@ class CheckSwitchHeat(CheckPlugin):
             card_data = CmtsCard.get_by_name(cards_data, card['name'])
 
             if 'temperature' in card:
-                status = self.validate_value_gt(card_data.temp, card['temperature'])
+                status = self.validate_value_lt(card_data.temp, card['temperature'])
                 status_list.append(status)
 
             if 'cpu' in card:
-                status = self.validate_value_gt(card_data.cpu, card['cpu'])
+                status = self.validate_value_lt(card_data.cpu, card['cpu'])
                 status_list.append(status)
 
         return self.get_device_status(status_list)

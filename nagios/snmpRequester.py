@@ -101,13 +101,13 @@ class SnmpRequester(object):
 
                 return result
 
-    def do_get(self, oid):
+    def do_get(self, *args):
         cmd_gen = cmdgen.CommandGenerator()
 
         error_indication, error_status, error_index, var_binds = cmd_gen.getCmd(
             self.get_snmp_target(),
             self.get_snmp_transport(),
-            oid
+            *args
         )
 
         return self.check_for_errors(error_indication, error_status, error_index, var_binds)
