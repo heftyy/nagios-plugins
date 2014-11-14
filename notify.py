@@ -23,7 +23,9 @@ class NotifyPlugin(NagiosPlugin):
 
     def run(self, options, host):
         print('host address %s' % host.address)
+        print('host output %s' % host.output)
         print('state %s' % host.state)
+
 
         parsed_output = self.parse_output(host.output)
         if parsed_output and len(parsed_output) > 0:
