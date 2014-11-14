@@ -29,6 +29,8 @@ class NotifyPlugin(NagiosPlugin):
         if parsed_output and len(parsed_output) > 0:
             for output in parsed_output:
                 self.send_notification(host, output.type)
+        else:
+            self.send_notification(host, options.notification_type)
 
     def send_notification(self, host, notification_type):
         data = {}
@@ -41,7 +43,6 @@ class NotifyPlugin(NagiosPlugin):
         resp = requests.post(self.config.cog_notification_url, params=data)
 
         print resp
-
 
     def add_arguments(self, parser):
         parser.add_argument(
