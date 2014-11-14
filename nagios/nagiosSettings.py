@@ -10,7 +10,7 @@ class NagiosSettings(object):
         self.device = json.loads(settings_string, object_hook=_decode_dict)
 
         if 'settingsString' in self.device:
-            self.settings = json.loads(self.device['settingsString'], object_hook=self._decode_dict)
+            self.settings = json.loads(self.device['settingsString'], object_hook=_decode_dict)
 
     def get_node_id(self):
         if 'nodeId' not in self.device:

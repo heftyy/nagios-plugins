@@ -25,16 +25,23 @@ class NotifyPlugin(NagiosPlugin):
         print('host address %s' % host.address)
         print('state %s' % host.state)
 
+        parsed_output = self.parse_output(host.output)
+        if parsed_output and len(parsed_output) > 0:
+            for output in parsed_output:
+                self.send_notification(host, output.type)
+
+    def send_notification(self, host, notification_type):
         data = {}
         data['nodeId'] = host.node_id
         data['ip'] = host.address
         data['state'] = host.state
-        data['output'] = json.dumps(self.parse_output(host.output))
-        data['type'] = options.notification_type
+        data['output'] = host.output
+        data['type'] = notification_type
 
         resp = requests.post(self.config.cog_notification_url, params=data)
 
         print resp
+
 
     def add_arguments(self, parser):
         parser.add_argument(
