@@ -91,8 +91,9 @@ class CheckSwitchHeat(CheckPlugin):
             if itf.snr:
                 status = self.validate_value_gt(itf.snr, cmts_snr)
 
-                if status != NagiosReturnValues.state_ok:
-                    print "!%s" % itf.get_json(nagios_status=status)
+                print "!%s" % itf.get_json(nagios_status=status)
+                # if status != NagiosReturnValues.state_ok:
+                #     print "!%s" % itf.get_json(nagios_status=status)
 
                 status_list.append(status)
 
