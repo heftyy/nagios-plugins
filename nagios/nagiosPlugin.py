@@ -26,6 +26,8 @@ class NagiosPlugin(object):
         parser.add_argument('-S', '--host_state', action="store", dest="host_state", help="Host state")
         parser.add_argument('-p', '--port', action="store", dest="port", help="Port")
 
+        parser.add_argument('-s', '--service_output', action="store", dest="service_output", help="Service output"),
+
         parser.add_argument('-C', '--community', action="store", dest="community", help="SNMP community"),
         parser.add_argument('-L', '--login', action="store", dest="login", help="Authentication login"),
         parser.add_argument('-P', '--password', action="store", dest="password", help="Authentication password"),
