@@ -3,8 +3,8 @@ import os
 
 class PluginConfig:
     def __init__(self):
-        print "PATH = %s" % os.path.dirname(__file__)
-        print "PATH = %s" % os.getcwd()
+        # print "PATH = %s" % os.path.dirname(__file__)
+        # print "PATH = %s" % os.getcwd()
 
         dir_path = "/".join(os.path.dirname(__file__).split('/')[:-1])
         config_path = "%s/%s" % (dir_path, 'plugins.conf')
@@ -24,6 +24,6 @@ class PluginConfig:
 
         self.api_nagios_settings_url = "http://%s:%s/%s" % (self.api_ip, self.api_port, self.api_nagios_settings_route)
 
-        print "urls:"
-        print self.cog_notification_url
-        print self.api_nagios_settings_url
+        # print "urls:"
+        # print self.cog_notification_url
+        # print self.api_nagios_settings_url
