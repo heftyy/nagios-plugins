@@ -16,7 +16,7 @@ class NotifyPlugin(NagiosPlugin):
         result = []
 
         for row in output.split("\n"):
-            if row[0] == '!':
+            if row and len(row) > 0 and row[0] == '!':
                 entry = json.loads(row[1:], object_hook=_decode_dict)
                 result.append(entry)
         return result
