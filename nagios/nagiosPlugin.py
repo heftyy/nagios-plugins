@@ -49,6 +49,9 @@ class NagiosPlugin(object):
         if not options.host_address and not options.node_id:
             parser.error('You must specify a host address or node id.')
 
+        if options.service_output == '$LONGSERVICEOUTPUT$':
+            options.service_output = None
+
         try:
             return_value = self.run(options, host)
             sys.exit(return_value)

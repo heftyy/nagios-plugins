@@ -23,14 +23,20 @@ class NotifyPlugin(NagiosPlugin):
 
     def run(self, options, host):
         print('host address %s' % host.address)
-        print('host output %s' % host.output)
         print('host state %s' % host.state)
-        print('host state %s' % options.service_output)
+        print('host output %s' % host.output)
+        print('service output %s' % options.service_output)
 
-        parsed_output = self.parse_output(host.output)
+        output = None
+        if options.service_output is not None:
+            output = options.service_output
+        else:
+            output = host.output
+
+        parsed_output = self.parse_output(output)
         if parsed_output and len(parsed_output) > 0:
-            for output in parsed_output:
-                self.send_notification(host, output.type)
+            for output_json in parsed_output:
+                self.send_notification(host, output_json.type)
         else:
             self.send_notification(host, options.notification_type)
 
