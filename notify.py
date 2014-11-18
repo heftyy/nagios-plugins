@@ -15,7 +15,7 @@ class NotifyPlugin(NagiosPlugin):
     def parse_output(output):
         result = []
 
-        for row in output.split("\n"):
+        for row in output.split('\\n'):
             if row and len(row) > 0 and row[0] == '!':
                 entry = json.loads(row[1:], object_hook=_decode_dict)
                 result.append(entry)
@@ -36,17 +36,20 @@ class NotifyPlugin(NagiosPlugin):
         parsed_output = self.parse_output(output)
         if parsed_output and len(parsed_output) > 0:
             for output_json in parsed_output:
-                self.send_notification(host, output_json.type)
+                self.send_notification(host, output_json['nagios_status'], output_json['type'])
         else:
-            self.send_notification(host, options.notification_type)
+            self.send_notification(host, options.service_output, options.notification_type)
 
-    def send_notification(self, host, notification_type):
+    def send_notification(self, host, service_state, notification_type):
         data = {}
         data['nodeId'] = host.node_id
         data['ip'] = host.address
         data['state'] = host.state
+        data['service'] = service_state
         data['output'] = host.output
         data['type'] = notification_type
+
+        print "data = %s" % json.dumps(data)
 
         resp = requests.post(self.config.cog_notification_url, params=data)
 

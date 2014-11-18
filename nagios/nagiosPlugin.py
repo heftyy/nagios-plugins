@@ -1,6 +1,8 @@
 import argparse
+import os
 import sys
 import traceback
+from datetime import datetime
 from host import NagiosHost
 from config import PluginConfig
 
@@ -26,7 +28,8 @@ class NagiosPlugin(object):
         parser.add_argument('-S', '--host_state', action="store", dest="host_state", help="Host state")
         parser.add_argument('-p', '--port', action="store", dest="port", help="Port")
 
-        parser.add_argument('-s', '--service_output', action="store", dest="service_output", help="Service output"),
+        parser.add_argument('--service_output', action="store", dest="service_output", help="Service output"),
+        parser.add_argument('--service_state', action="store", dest="service_state", help="Service state"),
 
         parser.add_argument('-C', '--community', action="store", dest="community", help="SNMP community"),
         parser.add_argument('-L', '--login', action="store", dest="login", help="Authentication login"),
@@ -45,6 +48,10 @@ class NagiosPlugin(object):
         options = parser.parse_args()
 
         host = NagiosHost(options)
+
+        script_name = os.path.basename(__file__)
+
+        print "%s run at %s" % (script_name, datetime.now())
 
         if not options.host_address and not options.node_id:
             parser.error('You must specify a host address or node id.')
