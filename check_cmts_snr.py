@@ -22,7 +22,8 @@ class Interface():
             "index": int(self.index),
             "fb_name": self.fb_name,
             "snr": int(self.snr),
-            "type": "itf-%d" % int(self.index)
+            "type": "itf-%d" % int(self.index),
+            "output": "%s itf-%s %s" % (self.fb_name, self.index, self.snr)
         }
         for key, value in kwargs.iteritems():
             json[key] = value
