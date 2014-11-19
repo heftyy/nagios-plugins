@@ -27,6 +27,7 @@ class NotifyPlugin(NagiosPlugin):
         print('host output %s' % host.output)
         print('service output %s' % options.service_output)
 
+        parsed_output = None
         output = None
         if options.service_output is not None:
             output = options.service_output
