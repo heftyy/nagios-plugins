@@ -30,15 +30,15 @@ class NotifyPlugin(NagiosPlugin):
         output = None
         if options.service_output is not None:
             output = options.service_output
+            parsed_output = self.parse_output(output)
         else:
             output = host.output
 
-        parsed_output = self.parse_output(output)
         if parsed_output and len(parsed_output) > 0:
             for output_json in parsed_output:
                 self.send_notification(host, output_json['nagios_status'], output_json['output'], output_json['type'])
         else:
-            self.send_notification(host, options.service_output, host.output, options.notification_type)
+            self.send_notification(host, 0, host.output, options.notification_type)
 
     def send_notification(self, host, service_state, output, notification_type):
         data = {}
