@@ -1,11 +1,10 @@
 #!/usr/bin/python
 
-import time
-import sys
-from gtk.gdk import __init__
 from pysnmp.proto.rfc1902 import ObjectName
+
 from nagios.checkPlugin import CheckPlugin
 from nagios.nagiosReturnValues import NagiosReturnValues
+
 
 CMTS_CARD_NAME = '1.3.6.1.4.1.4998.1.1.10.1.4.2.1.3'
 CMTS_CARD_TEMP = '1.3.6.1.4.1.4998.1.1.10.1.4.2.1.29'

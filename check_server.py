@@ -23,7 +23,6 @@ MEMORY_SHARED = ObjectName(".1.3.6.1.4.1.2021.4.13.0")
 MEMORY_BUFFERED = ObjectName(".1.3.6.1.4.1.2021.4.14.0")
 MEMORY_CACHED = ObjectName(".1.3.6.1.4.1.2021.4.15.0")
 
-
 STORAGE_INDEX = ObjectName("1.3.6.1.2.1.25.2.3.1.1")
 STORAGE_TYPE = ObjectName("1.3.6.1.2.1.25.2.3.1.2")
 STORAGE_DESCR = ObjectName("1.3.6.1.2.1.25.2.3.1.3")
