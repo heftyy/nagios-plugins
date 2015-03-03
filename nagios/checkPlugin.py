@@ -25,7 +25,7 @@ class CheckPlugin(NagiosPlugin):
             return False
 
     def validate_value(self, value, settings):
-        if "type" in settings:
+        if "check_type" in settings:
             validate_type = settings["check_type"]
             if validate_type == "lt":
                 return self.validate_value_lt(value, settings)
@@ -46,7 +46,7 @@ class CheckPlugin(NagiosPlugin):
             critical = settings['critical']
 
         if not critical and not warning:
-            return NagiosReturnValues.state_unknown
+            return NagiosReturnValues.state_ok
 
         if CheckPlugin.is_number(value):
             number = float(value)
@@ -85,7 +85,7 @@ class CheckPlugin(NagiosPlugin):
             critical = settings['critical']
 
         if not critical and not warning:
-            return NagiosReturnValues.state_unknown
+            return NagiosReturnValues.state_ok
 
         if CheckPlugin.is_number(value):
             number = float(value)
