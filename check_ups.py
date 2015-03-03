@@ -53,7 +53,7 @@ class CheckUps(CheckPlugin):
             return NagiosReturnValues.state_ok
 
         for ups in ups_list:
-            if not 'temperature' and not 'voltage' in ups:
+            if 'temperature' not in ups and 'voltage' not in ups:
                 return NagiosReturnValues.state_unknown
 
             try:
