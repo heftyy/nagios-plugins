@@ -30,8 +30,6 @@ class CheckUps(CheckPlugin):
 
         result = {'temperature': temperature, 'voltage': voltage}
 
-        print result
-
         return result
 
     def validate_status(self, ups, value):

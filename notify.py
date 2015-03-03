@@ -10,7 +10,6 @@ _log = logging.getLogger('notifyPlugin')
 
 
 class NotifyPlugin(NagiosPlugin):
-
     @staticmethod
     def parse_output(output):
         result = []
@@ -27,19 +26,27 @@ class NotifyPlugin(NagiosPlugin):
         print('host output %s' % host.output)
         print('service output %s' % options.service_output)
 
-        parsed_output = None
-        output = None
-        if options.service_output is not None:
-            output = options.service_output
-            parsed_output = self.parse_output(output)
-        else:
-            output = host.output
+        # service notification
+        if options.service_state != '$':
+            parsed_output = None
+            if options.service_output is not None:
+                output = options.service_output
+                parsed_output = self.parse_output(output)
 
-        if parsed_output and len(parsed_output) > 0:
-            for output_json in parsed_output:
-                self.send_notification(host, output_json['nagios_status'], output_json['output'], output_json['type'])
+            if parsed_output and len(parsed_output) > 0:
+                for output_json in parsed_output:
+                    self.send_notification(host,
+                                           output_json['nagios_status'],
+                                           output_json['output'],
+                                           output_json['type'])
+            else:
+                self.send_notification(host,
+                                       options.service_state,
+                                       options.service_output,
+                                       "service-%s" % options.notification_type)
+
         else:
-            self.send_notification(host, options.service_state, host.output, options.notification_type)
+            self.send_notification(host, None, host.output, options.notification_type)
 
     def send_notification(self, host, service_state, output, notification_type):
         data = {}
@@ -59,6 +66,7 @@ class NotifyPlugin(NagiosPlugin):
     def add_arguments(self, parser):
         parser.add_argument(
             '--type', action="store", dest="notification_type", help="Notification type")
+
 
 if __name__ == '__main__':
     NotifyPlugin().start()
