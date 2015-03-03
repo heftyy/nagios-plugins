@@ -80,7 +80,7 @@ class CheckTraffic(CheckPlugin):
         if traffic_min is not None and traffic_max is not None:
             # don't return in the first if because it could still be in the warning range
             if traffic_min <= traffic <= traffic_max:
-                if traffic_min_warning is None or traffic_max_warning is None:
+                if traffic_min_warning is None and traffic_max_warning is None:
                     print "traffic: %d is valid" % traffic
                     return NagiosReturnValues.state_ok
             else:

@@ -40,12 +40,12 @@ class CheckSwitchHeat(CheckPlugin):
         return self.get_device_status(temp_results)
 
     def check(self, settings):
-        switch_heat = settings.get_switch_heat()
+        switch_heat_settings = settings.get_switch_heat()
 
-        if not switch_heat:
+        if not switch_heat_settings:
             return NagiosReturnValues.state_ok
 
-        for heat_settings in switch_heat:
+        for heat_settings in switch_heat_settings:
 
             try:
                 temperatures = self.get_switch_heat()

@@ -22,7 +22,7 @@ class BgpSession():
         self.out_messages = out_messages
 
 
-class CheckSwitchHeat(CheckPlugin):
+class CheckBGP(CheckPlugin):
     def get_bgp_data(self):
         request_bgp_oid = ObjectName(BGP_OID)
 
@@ -93,4 +93,4 @@ class CheckSwitchHeat(CheckPlugin):
 
 
 if __name__ == '__main__':
-    CheckSwitchHeat().start()
+    CheckBGP().start()

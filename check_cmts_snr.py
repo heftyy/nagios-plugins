@@ -48,7 +48,7 @@ class Interface():
         return name
 
 
-class CheckSwitchHeat(CheckPlugin):
+class CheckCmtsSnr(CheckPlugin):
 
     def get_cmts_snr_values(self):
         request_fb_oid = ObjectName(CMTS_FIBER_NODES)
@@ -122,4 +122,4 @@ class CheckSwitchHeat(CheckPlugin):
 
 
 if __name__ == '__main__':
-    CheckSwitchHeat().start()
+    CheckCmtsSnr().start()

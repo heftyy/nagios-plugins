@@ -1,4 +1,5 @@
 #!/usr/bin/python
+import json
 
 from pysnmp.proto.rfc1902 import ObjectName
 
@@ -18,6 +19,30 @@ class CmtsCard():
         self.temp = temp if temp != 999 else 0
         self.cpu = cpu
 
+    def get_json_temperature(self, **kwargs):
+        json_temp = {
+            "index": int(self.index),
+            "name": self.name,
+            "temp": int(self.temp),
+            "type": "temperature-card-%d" % int(self.index),
+            "output": "%s carc-%s temp: %s" % (self.name, self.index, self.temp)
+        }
+        for key, value in kwargs.iteritems():
+            json_temp[key] = value
+        return json_temp
+
+    def get_json_cpu(self, **kwargs):
+        json_cpu = {
+            "index": int(self.index),
+            "name": self.name,
+            "cpu": int(self.cpu),
+            "type": "cpu-card-%d" % int(self.index),
+            "output": "%s card-%s cpu: %s" % (self.name, self.index, self.cpu)
+        }
+        for key, value in kwargs.iteritems():
+            json_cpu[key] = value
+        return json_cpu
+
     @staticmethod
     def get_by_name(card_list, name):
         for card in card_list:
@@ -25,7 +50,7 @@ class CmtsCard():
                 return card
 
 
-class CheckSwitchHeat(CheckPlugin):
+class CheckCmtsCard(CheckPlugin):
 
     def get_cmts_card_data(self):
         request_card_name_oid = ObjectName(CMTS_CARD_NAME)
@@ -56,7 +81,12 @@ class CheckSwitchHeat(CheckPlugin):
                     else:
                         idle_result = None
 
-                    card = CmtsCard(last, value, temp_result, None if idle_result is None else 100 - idle_result)
+                    card = CmtsCard(
+                        last,
+                        value.prettyPrint(),
+                        temp_result,
+                        None if idle_result is None else 100 - idle_result
+                    )
                     card_list.append(card)
 
         else:
@@ -67,10 +97,10 @@ class CheckSwitchHeat(CheckPlugin):
 
         return card_list
 
-    def validate_card(self, cmts_cards, cards_data):
+    def validate_card(self, cmts_cards_settings, cards_data):
 
         status_list = []
-        for card in cmts_cards:
+        for card in cmts_cards_settings:
             if 'name' not in card:
                 return NagiosReturnValues.state_unknown
 
@@ -78,18 +108,20 @@ class CheckSwitchHeat(CheckPlugin):
 
             if 'temperature' in card:
                 status = self.validate_value_lt(card_data.temp, card['temperature'])
+                print "!%s" % json.dumps(card_data.get_json_temperature(nagios_status=status))
                 status_list.append(status)
 
             if 'cpu' in card:
                 status = self.validate_value_lt(card_data.cpu, card['cpu'])
+                print "!%s" % json.dumps(card_data.get_json_cpu(nagios_status=status))
                 status_list.append(status)
 
         return self.get_device_status(status_list)
 
     def check(self, settings):
-        cmts_cards = settings.get_cmts_cards()
+        cmts_cards_settings = settings.get_cmts_cards()
 
-        if not cmts_cards:
+        if not cmts_cards_settings:
             return NagiosReturnValues.state_ok
 
         try:
@@ -98,7 +130,7 @@ class CheckSwitchHeat(CheckPlugin):
             print "ValueError %s" % e
             return NagiosReturnValues.state_unknown
 
-        validate = self.validate_card(cmts_cards, cards_data)
+        validate = self.validate_card(cmts_cards_settings, cards_data)
         if validate != NagiosReturnValues.state_ok:
             return validate
 
@@ -106,4 +138,4 @@ class CheckSwitchHeat(CheckPlugin):
 
 
 if __name__ == '__main__':
-    CheckSwitchHeat().start()
+    CheckCmtsCard().start()

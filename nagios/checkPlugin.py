@@ -26,7 +26,7 @@ class CheckPlugin(NagiosPlugin):
 
     def validate_value(self, value, settings):
         if "type" in settings:
-            validate_type = settings["type"]
+            validate_type = settings["check_type"]
             if validate_type == "lt":
                 return self.validate_value_lt(value, settings)
             elif validate_type == "gt":
@@ -155,6 +155,8 @@ class CheckPlugin(NagiosPlugin):
         if self.snmp_requester.init_connection():
             script_return_value = self.check(settings)
             sys.exit(script_return_value)
+
+        print "Error, snmp connection failed."
 
     def check(self, settings):
         raise NotImplementedError("Please implement your plugin (check method).")

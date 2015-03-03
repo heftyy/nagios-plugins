@@ -69,7 +69,7 @@ class Storage():
         self.used = int(used)
 
 
-class CheckSwitchHeat(CheckPlugin):
+class CheckServer(CheckPlugin):
 
     def get_server_data(self):
         server = None
@@ -182,4 +182,4 @@ class CheckSwitchHeat(CheckPlugin):
 
 
 if __name__ == '__main__':
-    CheckSwitchHeat().start()
+    CheckServer().start()
