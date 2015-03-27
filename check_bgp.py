@@ -67,6 +67,7 @@ class CheckBGP(CheckPlugin):
                     in_messages = bgp_data[ip].in_messages
 
                     status = self.validate_value_gt(in_messages, bgp)
+                    print "bgp: %s" % in_messages
                     status_list.append(status)
                 else:
                     status_list.append(NagiosReturnValues.state_unknown)

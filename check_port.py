@@ -29,7 +29,7 @@ class CheckPort(CheckPlugin):
             print 'port %s has the required status, OK' % itf['itfIndex']
             return True
         else:
-            print 'port %s has the wrong status, BAD' % itf['itfIndex']
+            print 'port %s has the wrong status, ERROR' % itf['itfIndex']
             return False
 
     def check(self, settings):

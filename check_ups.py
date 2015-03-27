@@ -1,4 +1,5 @@
 #!/usr/bin/python
+import json
 
 from pysnmp.proto.rfc1902 import ObjectName
 
@@ -32,15 +33,17 @@ class CheckUps(CheckPlugin):
 
         return result
 
-    def validate_status(self, ups, value):
+    def validate_status(self, ups_settings, value):
 
         temp_valid = voltage_valid = None
 
-        if 'temperature' in ups:
-            temp_valid = self.validate_value_lt(value['temperature'], ups['temperature'])
+        if 'temperature' in ups_settings:
+            temp_valid = self.validate_value_lt(value['temperature'], ups_settings['temperature'])
+            print "temperatura: %s" % value['temperature']
 
-        if 'voltage' in ups:
-            voltage_valid = self.validate_value_gt(value['voltage'], ups['voltage'])
+        if 'voltage' in ups_settings:
+            voltage_valid = self.validate_value_gt(value['voltage'], ups_settings['voltage'])
+            print "napiecie: %s" % value['voltage']
 
         return self.get_device_status(temp_valid, voltage_valid)
 

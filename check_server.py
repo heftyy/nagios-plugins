@@ -62,11 +62,12 @@ class Server():
 
 
 class Storage():
-    def __init__(self, index, storage_type, size, used):
+    def __init__(self, index, storage_type, size, used, description):
         self.index = int(index)
         self.type = storage_type
         self.size = int(size)
         self.used = int(used)
+        self.description = description
 
 
 class CheckServer(CheckPlugin):
@@ -84,9 +85,9 @@ class CheckServer(CheckPlugin):
         server_data = self.snmp_requester.do_get(*request_oids)
         if server_data and len(server_data) > 0:
             server = Server(
-                server_data[ONE_MINUTE_LOAD_OID],
-                server_data[FIVE_MINUTE_LOAD_OID],
-                server_data[FIFTEEN_MINUTE_LOAD_OID],
+                float(server_data[ONE_MINUTE_LOAD_OID]) / 100,
+                float(server_data[FIVE_MINUTE_LOAD_OID]) / 100,
+                float(server_data[FIFTEEN_MINUTE_LOAD_OID]) / 100,
                 server_data[USER_CPU],
                 server_data[SYSTEM_CPU],
                 server_data[IDLE_CPU],
@@ -99,8 +100,9 @@ class CheckServer(CheckPlugin):
                 server_data[MEMORY_BUFFERED],
                 server_data[MEMORY_CACHED]
             )
-            for oid, value in server_data.items():
-                print "%s = %s" % (oid.prettyPrint(), value.prettyPrint())
+
+            # for oid, value in server_data.items():
+            #   print "%s = %s" % (oid.prettyPrint(), value.prettyPrint())
 
         else:
             raise ValueError("didn't get any values from the server")
@@ -127,12 +129,20 @@ class CheckServer(CheckPlugin):
 
                 request_storage_size_oid = ObjectName("%s.%s" % (STORAGE_SIZE, storage_index))
                 request_storage_used_oid = ObjectName("%s.%s" % (STORAGE_USED, storage_index))
+                request_storage_desc_oid = ObjectName("%s.%s" % (STORAGE_DESCR, storage_index))
 
                 storage_size = self.snmp_requester.do_get(request_storage_size_oid)[request_storage_size_oid]
                 storage_used = self.snmp_requester.do_get(request_storage_used_oid)[request_storage_used_oid]
+                storage_desc = self.snmp_requester.do_get(request_storage_desc_oid)[request_storage_desc_oid]
 
                 if storage_index not in storage_dict:
-                    storage_dict[storage_index] = Storage(storage_index, storage_type, storage_size, storage_used)
+                    storage_dict[storage_index] = Storage(
+                        storage_index,
+                        storage_type,
+                        storage_size,
+                        storage_used,
+                        storage_desc
+                    )
 
         return storage_dict
 
@@ -145,6 +155,7 @@ class CheckServer(CheckPlugin):
 
             if key in server_data.__dict__:
                 status = self.validate_value(server_data[key], settings)
+                print "%s: %s" % (key, server_data[key])
                 status_list.append(status)
             else:
                 status_list.append(NagiosReturnValues.state_unknown)
@@ -155,6 +166,7 @@ class CheckServer(CheckPlugin):
                 for storage in storage_list.values():
                     storage_used_percent = int((float(storage.used) / storage.size) * 100)
                     status = self.validate_value_lt(storage_used_percent, server_settings['storage_used'])
+                    print "zajetosc dysku %s: %s" % (storage.description, storage_used_percent)
                     status_list.append(status)
             else:
                 status_list.append(NagiosReturnValues.state_unknown)

@@ -13,7 +13,7 @@ IF_OUT_OCTETS = '1.3.6.1.2.1.2.2.1.16'
 IF_HC_IN_OCTETS = '1.3.6.1.2.1.31.1.1.1.6'
 IF_HC_OUT_OCTETS = '1.3.6.1.2.1.31.1.1.1.10'
 
-#wait between checking octets for seconds
+# wait between checking octets for seconds
 TRAFFIC_UPDATE_INTERVAL = 5
 
 
@@ -25,6 +25,8 @@ class CheckTraffic(CheckPlugin):
 
     def get_traffic(self, itf, snmp_version):
         itf_index = itf['itfIndex']
+
+        traffic_oid = None
 
         # snmp version 1
         if snmp_version == 0:
@@ -81,18 +83,18 @@ class CheckTraffic(CheckPlugin):
             # don't return in the first if because it could still be in the warning range
             if traffic_min <= traffic <= traffic_max:
                 if traffic_min_warning is None and traffic_max_warning is None:
-                    print "traffic: %d is valid" % traffic
+                    print "traffic: %d OK" % traffic
                     return NagiosReturnValues.state_ok
             else:
-                print "traffic: %d is invalid ERROR" % traffic
+                print "traffic: %d ERROR" % traffic
                 return NagiosReturnValues.state_critical
 
         if traffic_min_warning is not None and traffic_max_warning is not None:
             if traffic_min_warning <= traffic <= traffic_max_warning:
-                print "traffic: %d is valid" % traffic
+                print "traffic: %d OK" % traffic
                 return NagiosReturnValues.state_ok
             else:
-                print "traffic: %d is invalid WARNING" % traffic
+                print "traffic: %d WARNING" % traffic
                 return NagiosReturnValues.state_warning
 
         return NagiosReturnValues.state_unknown

@@ -36,6 +36,7 @@ class CheckSwitchHeat(CheckPlugin):
         temp_results = []
         for temp in temperatures:
             temp_results.append(self.validate_value_lt(temp, heat_settings))
+            print "temperatura: %s" % temp
 
         return self.get_device_status(temp_results)
 

@@ -52,31 +52,32 @@ class CheckPlugin(NagiosPlugin):
             number = float(value)
             if critical:
                 if number >= critical:
-                    print 'value %s is above critical' % number
+                    # print 'value %s is above critical' % number
                     return NagiosReturnValues.state_critical
 
             if warning:
                 if number >= warning:
-                    print 'value %s is above warning' % number
+                    # print 'value %s is above warning' % number
                     return NagiosReturnValues.state_warning
 
         else:
             if critical:
                 if value == critical:
-                    print 'value %s is critical' % value
+                    # print 'value %s is critical' % value
                     return NagiosReturnValues.state_critical
 
             if warning:
                 if value == warning:
-                    print 'value %s is warning' % value
+                    # print 'value %s is warning' % value
                     return NagiosReturnValues.state_warning
 
-        print 'value %s is ok' % value
+        # print 'value %s is ok' % value
         return NagiosReturnValues.state_ok
 
     @staticmethod
     def validate_value_gt(value, settings):
         warning = critical = None
+
 
         if 'warning' in settings:
             warning = settings['warning']
@@ -91,24 +92,24 @@ class CheckPlugin(NagiosPlugin):
             number = float(value)
             if critical:
                 if number <= critical:
-                    print 'value %s is below critical' % number
+                    # print 'value %s is below critical' % number
                     return NagiosReturnValues.state_critical
             if warning:
                 if number <= warning:
-                    print 'value %s is below warning' % number
+                    # print 'value %s is below warning' % number
                     return NagiosReturnValues.state_warning
         else:
             if critical:
                 if value == critical:
-                    print 'value %s is critical' % value
+                    # print 'value %s is critical' % value
                     return NagiosReturnValues.state_critical
 
             if warning:
                 if value == warning:
-                    print 'value %s is warning' % value
+                    # print 'value %s is warning' % value
                     return NagiosReturnValues.state_warning
 
-        print 'value %s is ok' % value
+        # print 'value %s is ok' % value
         return NagiosReturnValues.state_ok
 
     @staticmethod
