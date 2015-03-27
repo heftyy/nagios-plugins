@@ -25,7 +25,7 @@ class CmtsCard():
             "name": self.name,
             "temp": int(self.temp),
             "type": "temperature-card-%d" % int(self.index),
-            "output": "%s card-%s temp: %s" % (self.name, self.index, self.temp)
+            "output": "%s card-%s temperatura: %s" % (self.name, self.index, self.temp)
         }
         for key, value in kwargs.iteritems():
             json_temp[key] = value
