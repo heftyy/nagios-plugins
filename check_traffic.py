@@ -110,6 +110,8 @@ class CheckTraffic(CheckPlugin):
         if not snmp_settings:
             return 1
 
+        statuses = []
+
         for itf in interfaces:
             try:
                 traffic = self.get_traffic(itf, snmp_settings['snmpVersion'])
@@ -117,14 +119,17 @@ class CheckTraffic(CheckPlugin):
                 print "ValueError %s" % e
                 return NagiosReturnValues.state_unknown
 
-            validate = self.validate_traffic(itf, traffic)
-            if validate != NagiosReturnValues.state_ok:
-                return validate
+            status = self.validate_traffic(itf, traffic)
+
+            statuses.append(status)
 
             print "traffic on itf: %s = %d B" % (itf['itfIndex'], traffic)
             print "traffic on itf: %s = %f MB" % (itf['itfIndex'], self.bytes_to_mb(traffic))
 
-        return NagiosReturnValues.state_ok
+        if len(statuses) == 0:
+            return NagiosReturnValues.state_ok
+        else:
+            return self.get_device_status(statuses)
 
 
 if __name__ == '__main__':
