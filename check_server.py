@@ -101,7 +101,6 @@ class CheckServer(CheckPlugin):
                 server_data[MEMORY_CACHED]
             )
 
-
         else:
             raise ValueError("didn't get any values from the server")
 

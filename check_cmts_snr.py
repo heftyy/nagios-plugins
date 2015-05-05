@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import json
+import simplejson as json
 
 from pysnmp.proto.rfc1902 import ObjectName
 
