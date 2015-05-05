@@ -25,11 +25,12 @@ class CheckPort(CheckPlugin):
 
     @staticmethod
     def validate_status(itf, status):
+        port_status_string = 'włączony' if itf['oper_status'] == 0 else 'wyłączony'
+        print 'port %s jest %s' % (itf['itfIndex'], port_status_string)
+
         if itf['oper_status'] == status:
-            print 'port %s has the required status, OK' % itf['itfIndex']
             return True
         else:
-            print 'port %s has the wrong status, ERROR' % itf['itfIndex']
             return False
 
     def check(self, settings):
