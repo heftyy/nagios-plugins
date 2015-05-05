@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import simplejson as json
+import json
 
 from pysnmp.proto.rfc1902 import ObjectName
 
@@ -93,7 +93,7 @@ class CheckCmtsSnr(CheckPlugin):
             if itf.snr:
                 status = self.validate_value_gt(itf.snr, cmts_snr)
 
-                print "!%s" % json.dumps(itf.get_json(nagios_status=status))
+                print "!%s" % json.dumps(itf.get_json(nagios_status=NagiosReturnValues.value_to_int(status)))
                 # if status != NagiosReturnValues.state_ok:
                 #     print "!%s" % itf.get_json(nagios_status=status)
 

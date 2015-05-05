@@ -10,6 +10,17 @@ class NagiosReturnValues(Enum):
     state_unknown = 3
 
     @staticmethod
+    def value_to_int(value):
+        if value == NagiosReturnValues.state_ok:
+            return 0
+        elif value == NagiosReturnValues.state_warning:
+            return 1
+        elif value == NagiosReturnValues.state_critical:
+            return 2
+        elif value == NagiosReturnValues.state_unknown:
+            return 3
+
+    @staticmethod
     def value_to_string(value):
         if value == NagiosReturnValues.state_ok:
             return "OK"

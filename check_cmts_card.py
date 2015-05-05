@@ -108,12 +108,14 @@ class CheckCmtsCard(CheckPlugin):
 
             if 'temperature' in card:
                 status = self.validate_value_lt(card_data.temp, card['temperature'])
-                print "!%s" % json.dumps(card_data.get_json_temperature(nagios_status=status))
+                print "!%s" % json.dumps(card_data.get_json_temperature(
+                    nagios_status=NagiosReturnValues.value_to_int(status)))
                 status_list.append(status)
 
             if 'cpu' in card:
                 status = self.validate_value_lt(card_data.cpu, card['cpu'])
-                print "!%s" % json.dumps(card_data.get_json_cpu(nagios_status=status))
+                print "!%s" % json.dumps(card_data.get_json_cpu(
+                    nagios_status=NagiosReturnValues.value_to_int(status)))
                 status_list.append(status)
 
         return self.get_device_status(status_list)
