@@ -49,7 +49,7 @@ class CheckPort(CheckPlugin):
             if not self.validate_status(itf, status):
                 return NagiosReturnValues.state_critical
 
-            print "status on itf: %s = %d" % (itf['itfIndex'], status)
+            # print "status on itf: %s = %d" % (itf['itfIndex'], status)
 
         return NagiosReturnValues.state_ok
 
