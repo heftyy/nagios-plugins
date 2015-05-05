@@ -44,7 +44,7 @@ class CheckSensor(CheckPlugin):
         # lan controller returns OctetString so we have to turn it into string with pretty print and cast to float
         temperature = float(self.get_sensor_value(request_oid).prettyPrint())
 
-        print "temperatura: %s, (%s / %s)" % (temperature, sensor_config['warning'], sensor_config['critical'])
+        print "temperatura: %s (%s / %s)" % (temperature, sensor_config['warning'], sensor_config['critical'])
 
         return self.validate_status(sensor_config, temperature)
 
@@ -60,7 +60,7 @@ class CheckSensor(CheckPlugin):
         # lan controller returns OctetString so we have to turn it into string with pretty print and cast to float
         temperature = float(self.get_sensor_value(request_oid).prettyPrint())
 
-        print "temperatura: %s, (%s / %s)" % (temperature, sensor_config['warning'], sensor_config['critical'])
+        print "temperatura: %s (%s / %s)" % (temperature, sensor_config['warning'], sensor_config['critical'])
 
         return self.validate_status(sensor_config, temperature)
 
