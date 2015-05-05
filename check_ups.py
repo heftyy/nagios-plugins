@@ -43,7 +43,7 @@ class CheckUps(CheckPlugin):
 
         if 'voltage' in ups_settings:
             voltage_valid = self.validate_value_gt(value['voltage'], ups_settings['voltage'])
-            print "napiecie: %s" % value['voltage']
+            print "napiecie: %s" % (value['voltage'] / 10)
 
         return self.get_device_status(temp_valid, voltage_valid)
 

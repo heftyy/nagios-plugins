@@ -51,7 +51,7 @@ class NagiosPlugin(object):
 
         script_name = os.path.basename(__file__)
 
-        print "%s run at %s" % (script_name, datetime.now())
+        # print "%s run at %s" % (script_name, datetime.now())
 
         if not options.host_address and not options.node_id:
             parser.error('You must specify a host address or node id.')
@@ -73,4 +73,5 @@ class NagiosPlugin(object):
         raise NotImplementedError("Please implement your plugin (run method).")
 
     def add_arguments(self, parser):
-        print("No additional parameters")
+        return
+        # print("No additional parameters")

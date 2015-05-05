@@ -32,7 +32,7 @@ class SnmpRequester(object):
 
     def check_snmp_alive(self):
         if self.do_get(ping_oid):
-            print 'SNMP connection established'
+            # print 'SNMP connection established'
             return True
         else:
             print 'ERROR, SNMP connection failed'
@@ -67,7 +67,7 @@ class SnmpRequester(object):
 
                 for name, val in var_binds:
                     if isinstance(val, NoSuchObject) or isinstance(val, NoSuchInstance):
-                        #var_binds[name] = None
+                        # var_binds[name] = None
                         continue
                     result[name] = val
 
@@ -94,10 +94,10 @@ class SnmpRequester(object):
                     result_row = {}
                     for name, val in row:
                         if isinstance(val, NoSuchObject) or isinstance(val, NoSuchInstance):
-                            #row[name] = None
+                            # row[name] = None
                             continue
                         result[name] = val
-                    #result.append(result_row)
+                    # result.append(result_row)
 
                 return result
 
