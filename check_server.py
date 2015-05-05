@@ -101,8 +101,6 @@ class CheckServer(CheckPlugin):
                 server_data[MEMORY_CACHED]
             )
 
-            # for oid, value in server_data.items():
-            #   print "%s = %s" % (oid.prettyPrint(), value.prettyPrint())
 
         else:
             raise ValueError("didn't get any values from the server")

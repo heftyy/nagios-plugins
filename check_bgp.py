@@ -1,11 +1,10 @@
 #!/usr/bin/python
 
-import time
-import sys
-from gtk.gdk import __init__
 from pysnmp.proto.rfc1902 import ObjectName
+
 from nagios.checkPlugin import CheckPlugin
 from nagios.nagiosReturnValues import NagiosReturnValues
+
 
 BGP_OID = '1.3.6.1.2.1.15.3.1'
 BGP_REMOTE_ADDRESS_END = 7
