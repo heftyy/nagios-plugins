@@ -154,18 +154,11 @@ class CheckPlugin(NagiosPlugin):
         )
 
         if self.snmp_requester.init_connection():
+            print ""
+
             script_return_value = self.check(settings)
 
-            print "fix_nagios"
-            print "fix_nagios"
-            print "fix_nagios"
-            print "fix_nagios"
-            print "fix_nagios"
-            print "fix_nagios"
-            print "fix_nagios"
-            print "fix_nagios"
-            print "fix_nagios"
-            print "fix_nagios"
+            print ""
 
             sys.exit(NagiosReturnValues.value_to_int(script_return_value))
 
