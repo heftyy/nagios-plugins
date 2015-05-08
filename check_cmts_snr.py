@@ -21,9 +21,9 @@ class Interface():
         json = {
             "index": int(self.index),
             "fb_name": self.fb_name,
-            "snr": int(self.snr),
+            "snr": self.snr,
             "type": "itf-%d" % int(self.index),
-            "output": "%s itf-%s snr: %s" % (self.fb_name, self.index, float(self.snr) / 10)
+            "output": "%s itf-%s snr: %s" % (self.fb_name, self.index, self.snr)
         }
         for key, value in kwargs.iteritems():
             json[key] = value
@@ -76,7 +76,7 @@ class CheckCmtsSnr(CheckPlugin):
                     last = oid[len(oid) - 1]
 
                     if last in interfaces:
-                        interfaces[last].snr = value
+                        interfaces[last].snr = float(value) / 10
         else:
             raise ValueError("didn't get values from the device for oid %s" % request_snr_oid)
 
