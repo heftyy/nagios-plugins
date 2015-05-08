@@ -25,7 +25,7 @@ class CheckUps(CheckPlugin):
 
         voltage = self.snmp_requester.do_get(voltage_request_oid)
         if voltage and len(voltage) == 1:
-            voltage = voltage[voltage_request_oid]
+            voltage = float(voltage[voltage_request_oid]) / 10
         else:
             raise ValueError("didn't get a value from the device for oid %s" % voltage_request_oid)
 
@@ -43,7 +43,7 @@ class CheckUps(CheckPlugin):
 
         if 'voltage' in ups_settings:
             voltage_valid = self.validate_value_gt(value['voltage'], ups_settings['voltage'])
-            print "napiecie na baterii: %s V" % (value['voltage'] / 10)
+            print "napiecie na baterii: %s V" % (value['voltage'])
 
         return self.get_device_status(temp_valid, voltage_valid)
 
