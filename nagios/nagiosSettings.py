@@ -61,13 +61,13 @@ class NagiosSettings(object):
         return self.get_setting('switch_heat')
 
     def get_sensors(self):
-        return self.get_setting('sensors')
+        return self.get_setting('sensor')
 
     def get_ups_list(self):
-        return self.get_setting('ups_list')
+        return self.get_setting('ups')
 
     def get_cmts_cards(self):
-        return self.get_setting('cmts_cards')
+        return self.get_setting('cmts_card')
 
     def get_cmts_snr(self):
         return self.get_setting('cmts_snr')
