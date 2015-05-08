@@ -155,7 +155,7 @@ class CheckPlugin(NagiosPlugin):
 
         if self.snmp_requester.init_connection():
             script_return_value = self.check(settings)
-            sys.exit(script_return_value)
+            sys.exit(int(script_return_value))
 
         print "Error, snmp connection failed."
 
