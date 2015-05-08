@@ -39,11 +39,11 @@ class CheckUps(CheckPlugin):
 
         if 'temperature' in ups_settings:
             temp_valid = self.validate_value_lt(value['temperature'], ups_settings['temperature'])
-            print "temperatura: %s" % value['temperature']
+            print "temperatura na baterii: %s C" % value['temperature']
 
         if 'voltage' in ups_settings:
             voltage_valid = self.validate_value_gt(value['voltage'], ups_settings['voltage'])
-            print "napiecie: %s" % (value['voltage'] / 10)
+            print "napiecie na baterii: %s V" % (value['voltage'] / 10)
 
         return self.get_device_status(temp_valid, voltage_valid)
 
