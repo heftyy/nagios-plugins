@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import json
+import re
 
 from pysnmp.proto.rfc1902 import ObjectName
 
@@ -10,12 +11,15 @@ from nagios.nagiosReturnValues import NagiosReturnValues
 CMTS_SNR = '1.3.6.1.2.1.10.127.1.1.4.1.5'
 CMTS_FIBER_NODES = '1.3.6.1.4.1.4998.1.1.105.1.1.2.1.4'
 
+IF_DESCRIPTION = '1.3.6.1.2.1.2.2.1.2'
+
 
 class Interface():
     def __init__(self, index, oid):
         self.index = index
         self.fb_name = self.get_fb_name(oid)
         self.snr = None
+        self.description = None
 
     def get_json(self, **kwargs):
         json = {
@@ -23,7 +27,7 @@ class Interface():
             "fb_name": self.fb_name,
             "snr": self.snr,
             "type": "itf-%d" % int(self.index),
-            "output": "%s itf-%s snr: %s" % (self.fb_name, self.index, self.snr)
+            "output": "%s itf-%s snr: %s" % (self.fb_name, self.description, self.snr)
         }
         for key, value in kwargs.iteritems():
             json[key] = value
@@ -50,6 +54,19 @@ class Interface():
 
 class CheckCmtsSnr(CheckPlugin):
 
+    p = re.compile('[0-9/\\.]+')
+
+    def get_if_description(self, index):
+        if_description_request_oid = ObjectName("%s.%s" % (IF_DESCRIPTION, index))
+
+        if_description = self.snmp_requester.do_get(if_description_request_oid)
+        if if_description and len(if_description) == 1:
+            if_description = if_description[if_description_request_oid]
+        else:
+            raise ValueError("didn't get a value from the device for oid %s" % if_description_request_oid)
+
+        return re.search(r'([0-9/\\.]+)', if_description.prettyPrint()).group(0)
+
     def get_cmts_snr_values(self):
         request_fb_oid = ObjectName(CMTS_FIBER_NODES)
 
@@ -63,7 +80,6 @@ class CheckCmtsSnr(CheckPlugin):
                 itf = Interface(last, oid)
 
                 interfaces[itf.index] = itf
-
         else:
             raise ValueError("didn't get values from the device for oid %s" % request_fb_oid)
 
@@ -77,6 +93,7 @@ class CheckCmtsSnr(CheckPlugin):
 
                     if last in interfaces:
                         interfaces[last].snr = float(value) / 10
+                        interfaces[last].description = self.get_if_description(last)
         else:
             raise ValueError("didn't get values from the device for oid %s" % request_snr_oid)
 

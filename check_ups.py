@@ -31,7 +31,7 @@ class CheckUps(CheckPlugin):
 
         voltage = self.snmp_requester.do_get(voltage_request_oid)
         if voltage and len(voltage) == 1:
-            voltage = float(voltage[voltage_request_oid]) / 10
+            voltage = float(voltage[voltage_request_oid])
         else:
             raise ValueError("didn't get a value from the device for oid %s" % voltage_request_oid)
 
@@ -41,7 +41,7 @@ class CheckUps(CheckPlugin):
         if sec_on_battery and len(sec_on_battery) == 1:
             sec_on_battery = sec_on_battery[sec_on_battery_request_oid]
         else:
-            raise ValueError("didn't get a value from the device for oid %s" % temp_request_oid)
+            raise ValueError("didn't get a value from the device for oid %s" % sec_on_battery_request_oid)
 
         est_ch_rem_request_oid = ObjectName(UPS_EST_CH_REM)
 
@@ -49,7 +49,7 @@ class CheckUps(CheckPlugin):
         if est_ch_rem and len(est_ch_rem) == 1:
             est_ch_rem = est_ch_rem[est_ch_rem_request_oid]
         else:
-            raise ValueError("didn't get a value from the device for oid %s" % temp_request_oid)
+            raise ValueError("didn't get a value from the device for oid %s" % est_ch_rem_request_oid)
 
         out_percent_load_request_oid = ObjectName(UPS_OUT_PERCENT_LOAD)
 
@@ -57,7 +57,7 @@ class CheckUps(CheckPlugin):
         if out_percent_load and len(out_percent_load) == 1:
             out_percent_load = out_percent_load[out_percent_load_request_oid]
         else:
-            raise ValueError("didn't get a value from the device for oid %s" % temp_request_oid)
+            raise ValueError("didn't get a value from the device for oid %s" % out_percent_load_request_oid)
 
         result = {'temperature': temperature, 'voltage': voltage, 'sec_on_battery': sec_on_battery,
                   'est_ch_rem': est_ch_rem, 'out_percent_load': out_percent_load}
