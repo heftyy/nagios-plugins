@@ -7,6 +7,12 @@ from nagios.checkPlugin import CheckPlugin
 from nagios.nagiosReturnValues import NagiosReturnValues
 
 UPS_BATTERY_VOLTAGE = '1.3.6.1.2.1.33.1.2.5.0'
+UPS_INPUT_VOLTAGE = '1.3.6.1.2.1.33.1.3.3.1.3.1'
+
+UPS_SEC_ON_BATTERY = '1.3.6.1.2.1.33.1.2.2.0'
+UPS_EST_CH_REM = '1.3.6.1.2.1.33.1.2.4.0'
+UPS_OUT_PERCENT_LOAD = '1.3.6.1.2.1.33.1.4.4.1.5.1'
+
 UPS_BATTERY_TEMPERATURE = '1.3.6.1.2.1.33.1.2.7.0'
 
 
@@ -21,7 +27,7 @@ class CheckUps(CheckPlugin):
         else:
             raise ValueError("didn't get a value from the device for oid %s" % temp_request_oid)
 
-        voltage_request_oid = ObjectName(UPS_BATTERY_VOLTAGE)
+        voltage_request_oid = ObjectName(UPS_INPUT_VOLTAGE)
 
         voltage = self.snmp_requester.do_get(voltage_request_oid)
         if voltage and len(voltage) == 1:
@@ -29,7 +35,32 @@ class CheckUps(CheckPlugin):
         else:
             raise ValueError("didn't get a value from the device for oid %s" % voltage_request_oid)
 
-        result = {'temperature': temperature, 'voltage': voltage}
+        sec_on_battery_request_oid = ObjectName(UPS_SEC_ON_BATTERY)
+
+        sec_on_battery = self.snmp_requester.do_get(sec_on_battery_request_oid)
+        if sec_on_battery and len(sec_on_battery) == 1:
+            sec_on_battery = sec_on_battery[sec_on_battery_request_oid]
+        else:
+            raise ValueError("didn't get a value from the device for oid %s" % temp_request_oid)
+
+        est_ch_rem_request_oid = ObjectName(UPS_EST_CH_REM)
+
+        est_ch_rem = self.snmp_requester.do_get(est_ch_rem_request_oid)
+        if est_ch_rem and len(est_ch_rem) == 1:
+            est_ch_rem = est_ch_rem[est_ch_rem_request_oid]
+        else:
+            raise ValueError("didn't get a value from the device for oid %s" % temp_request_oid)
+
+        out_percent_load_request_oid = ObjectName(UPS_OUT_PERCENT_LOAD)
+
+        out_percent_load = self.snmp_requester.do_get(out_percent_load_request_oid)
+        if out_percent_load and len(out_percent_load) == 1:
+            out_percent_load = out_percent_load[out_percent_load_request_oid]
+        else:
+            raise ValueError("didn't get a value from the device for oid %s" % temp_request_oid)
+
+        result = {'temperature': temperature, 'voltage': voltage, 'sec_on_battery': sec_on_battery,
+                  'est_ch_rem': est_ch_rem, 'out_percent_load': out_percent_load}
 
         return result
 
@@ -39,11 +70,14 @@ class CheckUps(CheckPlugin):
 
         if 'temperature' in ups_settings:
             temp_valid = self.validate_value_lt(value['temperature'], ups_settings['temperature'])
-            print "temperatura na baterii: %s C" % value['temperature']
+            if temp_valid != NagiosReturnValues.state_ok:
+                print "Temperatura na baterii: %s C" % value['temperature']
 
         if 'voltage' in ups_settings:
             voltage_valid = self.validate_value_gt(value['voltage'], ups_settings['voltage'])
-            print "napiecie na baterii: %s V" % (value['voltage'])
+            if voltage_valid != NagiosReturnValues.state_ok:
+                print "napiecie: %s V, praca na baterii: %s, stan baterii: %s %%, obciazenie: %s %%" % \
+                      (value['voltage'], value['sec_on_battery'], value['est_ch_rem'], value['out_percent_load'])
 
         return self.get_device_status(temp_valid, voltage_valid)
 
@@ -66,6 +100,8 @@ class CheckUps(CheckPlugin):
             validate = self.validate_status(ups, result)
             if validate != NagiosReturnValues.state_ok:
                 return validate
+            else:
+                print "UPS OK"
 
         return NagiosReturnValues.state_ok
 
