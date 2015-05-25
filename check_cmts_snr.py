@@ -17,33 +17,33 @@ IF_DESCRIPTION = '1.3.6.1.2.1.2.2.1.2'
 class Interface():
     def __init__(self, index, oid):
         self.index = index
-        self.fb_name = self.get_fb_name(oid)
+        self.fn_name = self.get_fn_name(oid)
         self.snr = None
         self.description = None
 
     def get_json(self, **kwargs):
         json = {
             "index": int(self.index),
-            "fb_name": self.fb_name,
+            "fn_name": self.fn_name,
             "snr": self.snr,
-            "type": "itf-%d" % int(self.index),
-            "output": "%s %s snr: %s" % (self.fb_name, self.description, self.snr)
+            "type": "fn-%s" % self.fn_name,
+            "output": "%s %s snr: %s" % (self.fn_name, self.description, self.snr)
         }
         for key, value in kwargs.iteritems():
             json[key] = value
         return json
 
     @staticmethod
-    def get_fb_name(oid):
+    def get_fn_name(oid):
         if isinstance(oid, ObjectName):
             oid = oid.prettyPrint().split('.')
         elif isinstance(oid, basestring):
             oid = oid.split('.')
 
-        fb_oid_size = len(CMTS_FIBER_NODES.split('.'))
+        fn_oid_size = len(CMTS_FIBER_NODES.split('.'))
         name = ""
 
-        i = fb_oid_size + 2
+        i = fn_oid_size + 2
         while i < len(oid) - 1:
             char = int(oid[i])
             name += chr(char)
@@ -68,20 +68,20 @@ class CheckCmtsSnr(CheckPlugin):
         return re.search(r'([0-9/\\.]+)', if_description.prettyPrint()).group(0)
 
     def get_cmts_snr_values(self):
-        request_fb_oid = ObjectName(CMTS_FIBER_NODES)
+        request_fn_oid = ObjectName(CMTS_FIBER_NODES)
 
         interfaces = {}
 
-        fb_results = self.snmp_requester.do_walk(request_fb_oid)
-        if fb_results and len(fb_results) > 0:
-            for oid, value in fb_results.items():
+        fn_results = self.snmp_requester.do_walk(request_fn_oid)
+        if fn_results and len(fn_results) > 0:
+            for oid, value in fn_results.items():
 
                 last = oid[len(oid) - 1]
                 itf = Interface(last, oid)
 
                 interfaces[itf.index] = itf
         else:
-            raise ValueError("didn't get values from the device for oid %s" % request_fb_oid)
+            raise ValueError("didn't get values from the device for oid %s" % request_fn_oid)
 
         request_snr_oid = ObjectName(CMTS_SNR)
 
@@ -102,19 +102,37 @@ class CheckCmtsSnr(CheckPlugin):
 
         return interfaces
 
+    @staticmethod
+    def get_fn_map(interfaces):
+        fn_map = {}
+
+        for itf in interfaces.values():
+            if itf.fn_name in fn_map:
+                fn_map[itf.fn_name].append(itf)
+            else:
+                fn_map[itf.fn_name] = [itf]
+        return fn_map
+
     def validate_snr(self, cmts_snr, interfaces):
 
         status_list = []
 
-        for itf in interfaces.values():
-            if itf.snr:
-                status = self.validate_value_gt(itf.snr, cmts_snr)
+        fn_map = self.get_fn_map(interfaces)
 
-                print "!%s" % json.dumps(itf.get_json(nagios_status=NagiosReturnValues.value_to_int(status)))
-                # if status != NagiosReturnValues.state_ok:
-                #     print "!%s" % itf.get_json(nagios_status=status)
+        for fn in fn_map.keys():
+            fn_status_list = []
+            for itf in fn_map[fn]:
+                if itf.snr:
+                    status = self.validate_value_gt(itf.snr, cmts_snr)
 
-                status_list.append(status)
+                    fn_status_list.append(status)
+                    status_list.append(status)
+
+            for itf in fn_map[fn]:
+                if itf.snr:
+                    print "!%s" % json.dumps(itf.get_json(
+                        nagios_status=NagiosReturnValues.value_to_int(self.get_device_status(fn_status_list)))
+                    )
 
         return self.get_device_status(status_list)
 
