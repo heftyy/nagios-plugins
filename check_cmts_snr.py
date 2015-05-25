@@ -38,7 +38,7 @@ class Interface():
         json = {
             "fn_name": self.fn_name,
             "type": "fn-%s" % self.fn_name,
-            "output": "%s OK" % self.fn_name
+            "output": "%s snr >= %s" % (self.fn_name, self.snr)
         }
         for key, value in kwargs.iteritems():
             json[key] = value
@@ -64,7 +64,6 @@ class Interface():
 
 
 class CheckCmtsSnr(CheckPlugin):
-
     p = re.compile('[0-9/\\.]+')
 
     def get_if_description(self, index):
@@ -86,7 +85,6 @@ class CheckCmtsSnr(CheckPlugin):
         fn_results = self.snmp_requester.do_walk(request_fn_oid)
         if fn_results and len(fn_results) > 0:
             for oid, value in fn_results.items():
-
                 last = oid[len(oid) - 1]
                 itf = Interface(last, oid)
 
@@ -126,7 +124,7 @@ class CheckCmtsSnr(CheckPlugin):
                     fn_map[itf.fn_name] = [itf]
 
         for fn_name in fn_map:
-           fn_map[fn_name] = sorted(fn_map[fn_name], key=attrgetter('snr'))
+            fn_map[fn_name] = sorted(fn_map[fn_name], key=lambda sort_itf: sort_itf.snr)
 
         return fn_map
 
@@ -152,6 +150,7 @@ class CheckCmtsSnr(CheckPlugin):
 
             fn_status = self.get_device_status(fn_status_list)
             if fn_status == NagiosReturnValues.state_ok:
+                # choose the first interface in array to show ok message because it has the lowest snr
                 print "!%s" % json.dumps(fn_map[fn_name][0].get_ok_json(
                     nagios_status=NagiosReturnValues.value_to_int(fn_status))
                 )
