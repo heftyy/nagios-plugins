@@ -34,6 +34,16 @@ class Interface():
             json[key] = value
         return json
 
+    def get_ok_json(self, **kwargs):
+        json = {
+            "fn_name": self.fn_name,
+            "type": "fn-%s" % self.fn_name,
+            "output": "%s OK" % self.fn_name
+        }
+        for key, value in kwargs.iteritems():
+            json[key] = value
+        return json
+
     @staticmethod
     def get_fn_name(oid):
         if isinstance(oid, ObjectName):
@@ -126,20 +136,25 @@ class CheckCmtsSnr(CheckPlugin):
 
         fn_map = self.get_fn_map(interfaces)
 
-        for fn in fn_map.keys():
+        for fn_name in fn_map.keys():
             fn_status_list = []
-            for itf in fn_map[fn]:
+            for itf in fn_map[fn_name]:
                 if itf.snr:
                     status = self.validate_value_gt(itf.snr, cmts_snr)
+
+                    if status != NagiosReturnValues.state_ok:
+                        print "!%s" % json.dumps(itf.get_json(
+                            nagios_status=NagiosReturnValues.value_to_int(status))
+                        )
 
                     fn_status_list.append(status)
                     status_list.append(status)
 
-            for itf in fn_map[fn]:
-                if itf.snr:
-                    print "!%s" % json.dumps(itf.get_json(
-                        nagios_status=NagiosReturnValues.value_to_int(self.get_device_status(fn_status_list)))
-                    )
+            fn_status = self.get_device_status(fn_status_list)
+            if fn_status == NagiosReturnValues.state_ok:
+                print "!%s" % json.dumps(fn_map[fn_name][0].get_ok_json(
+                    nagios_status=NagiosReturnValues.value_to_int(fn_status))
+                )
 
         return self.get_device_status(status_list)
 
