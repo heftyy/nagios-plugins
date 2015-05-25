@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import json
+from operator import attrgetter
 import re
 
 from pysnmp.proto.rfc1902 import ObjectName
@@ -108,9 +109,15 @@ class CheckCmtsSnr(CheckPlugin):
 
         for itf in interfaces.values():
             if itf.fn_name in fn_map:
-                fn_map[itf.fn_name].append(itf)
+                if itf.snr:
+                    fn_map[itf.fn_name].append(itf)
             else:
-                fn_map[itf.fn_name] = [itf]
+                if itf.snr:
+                    fn_map[itf.fn_name] = [itf]
+
+        for fn_name in fn_map:
+           fn_map[fn_name] = sorted(fn_map[fn_name], key=attrgetter('snr'))
+
         return fn_map
 
     def validate_snr(self, cmts_snr, interfaces):
