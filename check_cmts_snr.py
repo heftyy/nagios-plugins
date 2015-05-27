@@ -136,14 +136,18 @@ class CheckCmtsSnr(CheckPlugin):
 
         for fn_name in fn_map.keys():
             fn_status_list = []
+
+            found_problem = False
             for itf in fn_map[fn_name]:
+
                 if itf.snr:
                     status = self.validate_value_gt(itf.snr, cmts_snr)
 
-                    if status != NagiosReturnValues.state_ok:
+                    if status != NagiosReturnValues.state_ok and not found_problem:
                         print "!%s" % json.dumps(itf.get_json(
                             nagios_status=NagiosReturnValues.value_to_int(status))
                         )
+                        found_problem = True
 
                     fn_status_list.append(status)
                     status_list.append(status)
