@@ -27,6 +27,10 @@ class CheckTraffic(CheckPlugin):
     def bytes_to_megabits(traffic_in_bytes):
         return float(8 * traffic_in_bytes) / (1000 * 1000)
 
+    @staticmethod
+    def kilobits_to_megabits(traffic_in_kbits):
+        return float(traffic_in_kbits / 1000)
+
     def get_traffic(self, itf, snmp_version):
         itf_index = itf['itfIndex']
 
@@ -68,6 +72,9 @@ class CheckTraffic(CheckPlugin):
 
         octets_diff = octets_end - octets_start
         traffic = octets_diff / TRAFFIC_UPDATE_INTERVAL
+
+        # convert to kbps
+        traffic = traffic * 8 / 1000
 
         return traffic
 
@@ -127,7 +134,7 @@ class CheckTraffic(CheckPlugin):
 
             statuses.append(status)
 
-            print "transfer na interfejse %s = %f Mb" % (itf['itfIndex'], self.bytes_to_megabits(traffic))
+            print "transfer na interfejse %s = %f Mb" % (itf['itfIndex'], self.kilobits_to_megabits(traffic))
             # print "traffic on itf: %s = %f MB" % (itf['itfIndex'], self.bytes_to_mb(traffic))
 
         if len(statuses) == 0:
