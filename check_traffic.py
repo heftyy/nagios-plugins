@@ -13,6 +13,9 @@ IF_OUT_OCTETS = '1.3.6.1.2.1.2.2.1.16'
 IF_HC_IN_OCTETS = '1.3.6.1.2.1.31.1.1.1.6'
 IF_HC_OUT_OCTETS = '1.3.6.1.2.1.31.1.1.1.10'
 
+IF_DESCRIPTION = '1.3.6.1.2.1.2.2.1.2'
+IF_ALIAS = '1.3.6.1.2.1.31.1.1.1.18'
+
 # wait between checking octets for seconds
 TRAFFIC_UPDATE_INTERVAL = 10
 
@@ -76,6 +79,24 @@ class CheckTraffic(CheckPlugin):
         # convert to kbps
         traffic = traffic * 8 / 1000
 
+        request_oid = ObjectName("%s.%s" % (IF_DESCRIPTION, itf_index))
+
+        itf_description = self.snmp_requester.do_get(request_oid)
+        if itf_description and len(itf_description) == 1:
+            itf_description = itf_description[request_oid]
+        else:
+            itf_description = ''
+
+        request_oid = ObjectName("%s.%s" % (IF_ALIAS, itf_index))
+
+        itf_alias = self.snmp_requester.do_get(request_oid)
+        if itf_alias and len(itf_alias) == 1:
+            itf_alias = itf_alias[request_oid]
+        else:
+            itf_alias = ''
+
+        print "transfer na interfejse %s (%s) = %d Mbit/s" % (itf_description, itf_alias, self.kilobits_to_megabits(traffic))
+
         return traffic
 
     @staticmethod
@@ -134,7 +155,6 @@ class CheckTraffic(CheckPlugin):
 
             statuses.append(status)
 
-            print "transfer na interfejse %s = %f Mb" % (itf['itfIndex'], self.kilobits_to_megabits(traffic))
             # print "traffic on itf: %s = %f MB" % (itf['itfIndex'], self.bytes_to_mb(traffic))
 
         if len(statuses) == 0:
