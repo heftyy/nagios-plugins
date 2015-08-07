@@ -1,6 +1,8 @@
 nagios-plugins
 ==========
 
+nagios-plugins.js is a javascript file that contains sample code for generating nagios settings that the plugins use
+
 check_type
 -----
   lt - current value on the device has to be lower than warning/critical
