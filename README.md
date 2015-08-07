@@ -9,7 +9,7 @@ check_type
   
   gt - current value on the device has to be higher than warning/critical
 
-JSON examples that the plugins can as input data from the server.
+### Examples of plugin input data below.
 ---
 
 Arris C4 CMTS:
