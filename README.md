@@ -4,14 +4,16 @@ nagios-plugins
 nagios-plugins.js is a javascript file that contains sample code for generating nagios settings that the plugins use
 
 
-#### check_type config option, available only for server
-==========
-  lt - current value on the device has to be lower than warning/critical
-  
-  gt - current value on the device has to be higher than warning/critical
+check_type config option, available only for server
 
-### Examples of plugin input data below.
-==========
+---
+
+* lt - current value on the device has to be lower than warning/critical
+* gt - current value on the device has to be higher than warning/critical
+
+##### Examples of plugin input data below.
+
+----
 
 Arris C4 CMTS:
 ```json
