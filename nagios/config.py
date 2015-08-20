@@ -15,8 +15,12 @@ class PluginConfig:
         self.cog_ip = config.get('COG', 'ip')
         self.cog_port = config.get('COG', 'port')
 
-        self.cog_notification_route = config.get('COG', 'notification_route')
-        self.cog_notification_url = "http://%s:%s/%s" % (self.cog_ip, self.cog_port, self.cog_notification_route)
+        self.notification_route = config.get('COG', 'notification_route')
+        self.notification_url = "http://%s:%s/%s" % (config.get('COG', 'ip'),
+                                                     config.get('COG', 'port'),
+                                                     config.get('COG', 'notification_route'))
 
-        self.cog_nagios_settings_route = config.get('COG', 'nagios_settings_route')
-        self.cog_nagios_settings_url = "http://%s:%s/%s" % (self.cog_ip, self.cog_port, self.cog_nagios_settings_route)
+        self.nagios_settings_route = config.get('API', 'nagios_settings_route')
+        self.nagios_settings_url = "http://%s:%s/%s" % (config.get('API', 'ip'),
+                                                        config.get('API', 'port'),
+                                                        config.get('API', 'nagios_settings_route'))

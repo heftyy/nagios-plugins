@@ -59,7 +59,7 @@ class NotifyPlugin(NagiosPlugin):
 
         print "data = %s" % json.dumps(data)
 
-        resp = requests.post(self.config.cog_notification_url, params=data)
+        resp = requests.post(self.config.notification_url, params=data)
 
         print resp
 

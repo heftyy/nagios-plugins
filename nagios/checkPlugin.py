@@ -137,7 +137,7 @@ class CheckPlugin(NagiosPlugin):
             print "Error, host node_id is missing"
             return 1
 
-        url = "%s/%s" % (self.config.cog_nagios_settings_url, host.node_id)
+        url = "%s/%s" % (self.config.nagios_settings_url, host.node_id)
         resp = requests.get(url, params=None)
 
         if resp.status_code != 200:
