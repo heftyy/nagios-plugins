@@ -162,7 +162,7 @@ class CheckPlugin(NagiosPlugin):
 
             sys.exit(NagiosReturnValues.value_to_int(script_return_value))
         else:
-            print "Error, snmp connection failed."
+            # print "Error, snmp connection failed."
             sys.exit(NagiosReturnValues.value_to_int(NagiosReturnValues.state_unknown))
 
     def check(self, settings):

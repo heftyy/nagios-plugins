@@ -35,7 +35,7 @@ class SnmpRequester(object):
             # print 'SNMP connection established'
             return True
         else:
-            print 'ERROR, SNMP connection failed'
+            # print 'ERROR, SNMP connection failed'
             return False
 
     def get_snmp_target(self):
