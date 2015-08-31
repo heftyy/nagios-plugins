@@ -161,8 +161,9 @@ class CheckPlugin(NagiosPlugin):
             print ""
 
             sys.exit(NagiosReturnValues.value_to_int(script_return_value))
-
-        print "Error, snmp connection failed."
+        else:
+            print "Error, snmp connection failed."
+            sys.exit(NagiosReturnValues.value_to_int(NagiosReturnValues.state_unknown))
 
     def check(self, settings):
         raise NotImplementedError("Please implement your plugin (check method).")
