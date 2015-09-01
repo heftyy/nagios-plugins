@@ -70,9 +70,12 @@ class CheckSensor(CheckPlugin):
 
         temperature = float(self.get_sensor_value(request_oid)) / 100
 
-        print "temperatura %s: %s (%s / %s)" % (sensor_config['name'], temperature, sensor_config['warning'], sensor_config['critical'])
+        status = self.validate_status(sensor_config, temperature)
 
-        return self.validate_status(sensor_config, temperature)
+        if status != NagiosReturnValues.state_ok:
+            print "temperatura %s: %s (%s / %s)" % (sensor_config['name'], temperature, sensor_config['warning'], sensor_config['critical'])
+
+        return status
 
     def get_sensor_status(self, sensor_config):
         status = NagiosReturnValues.state_ok
@@ -106,6 +109,7 @@ class CheckSensor(CheckPlugin):
                 return NagiosReturnValues.state_unknown
 
         if len(statuses) == 0:
+            print "Sensor OK"
             return NagiosReturnValues.state_ok
         else:
             return self.get_device_status(statuses)
