@@ -112,7 +112,10 @@ class CheckSensor(CheckPlugin):
             print "Sensor OK"
             return NagiosReturnValues.state_ok
         else:
-            return self.get_device_status(statuses)
+            status = self.get_device_status(statuses)
+            if status == NagiosReturnValues.state_ok:
+                print "Sensor OK"
+            return status
 
 
 if __name__ == '__main__':
