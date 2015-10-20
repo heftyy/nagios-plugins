@@ -72,6 +72,9 @@ class NagiosSettings(object):
     def get_cmts_snr(self):
         return self.get_setting('cmts_snr')
 
+    def get_cmts_utilization(self):
+        return self.get_setting('cmts_utilization')
+
     def get_bgp(self):
         return self.get_setting('bgp')
 
