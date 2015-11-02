@@ -27,7 +27,7 @@ class Interface():
             "index": int(self.index),
             "fn_name": self.fn_name,
             "snr": self.snr,
-            "type": "fn-%s" % self.fn_name,
+            "type": "fn-snr-%s" % self.fn_name,
             "output": "%s %s snr: %s" % (self.fn_name, self.description, self.snr)
         }
         for key, value in kwargs.iteritems():
@@ -37,8 +37,8 @@ class Interface():
     def get_ok_json(self, **kwargs):
         json = {
             "fn_name": self.fn_name,
-            "type": "fn-%s" % self.fn_name,
-            "output": "%s snr >= %s" % (self.fn_name, self.snr)
+            "type": "fn-snr-%s" % self.fn_name,
+            "output": "%s snr OK" % self.fn_name
         }
         for key, value in kwargs.iteritems():
             json[key] = value
