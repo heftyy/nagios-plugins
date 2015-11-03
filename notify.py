@@ -3,8 +3,10 @@ import json
 
 import logging
 import requests
+import sys
 from nagios.json_dict_decode import _decode_dict
 from nagios.nagiosPlugin import NagiosPlugin
+from nagios.nagiosSettings import NagiosSettings
 
 _log = logging.getLogger('notifyPlugin')
 
@@ -18,6 +20,23 @@ class NotifyPlugin(NagiosPlugin):
             if row and len(row) > 0 and row[0] == '!':
                 entry = json.loads(row[1:], object_hook=_decode_dict)
                 result.append(entry)
+        return result
+
+    def get_ignored_notification_types(self, node_id):
+        url = "%s/%s" % (self.config.nagios_settings_url, node_id)
+        resp = requests.get(url, params=None)
+
+        if resp.status_code != 200:
+            print resp.content
+            return []
+
+        settings = NagiosSettings(resp.content)
+        ignored_types = settings.get_ignored_types()
+        result = []
+        if ignored_types is not None:
+            for obj in ignored_types:
+                result.append(obj['ignored_type'])
+
         return result
 
     def run(self, options, host):
@@ -49,13 +68,19 @@ class NotifyPlugin(NagiosPlugin):
             self.send_notification(host, None, host.output, options.notification_type)
 
     def send_notification(self, host, service_state, output, notification_type):
-        data = {}
-        data['nodeId'] = host.node_id
-        data['ip'] = host.address
-        data['state'] = host.state
-        data['service'] = service_state
-        data['output'] = output
-        data['type'] = notification_type
+        ignored_types = self.get_ignored_notification_types(host.node_id)
+        if notification_type in ignored_types:
+            print 'notification type %s is ignored on node %s' % (notification_type, host.node_id)
+            return
+
+        data = {
+            'nodeId': host.node_id,
+            'ip': host.address,
+            'state': host.state,
+            'service': service_state,
+            'output': output,
+            'type': notification_type
+        }
 
         print "data = %s" % json.dumps(data)
 

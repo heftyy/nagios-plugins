@@ -80,3 +80,6 @@ class NagiosSettings(object):
 
     def get_server(self):
         return self.get_setting('server')
+
+    def get_ignored_types(self):
+        return self.get_setting('ignored_types')
