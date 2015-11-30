@@ -1,6 +1,14 @@
 nagios-plugins
 ==========
 
+Nagios plugins written in python that check services on network devices over snmp.
+Each plugin returns an int according to nagios specifications ( 0 - ok, 1 - warning, 2 - critical, 3 - unknown ).
+
+Scripts that check the CMTS will also output additional information to stdout that the notify script
+will parse and use to create better notifications types.
+
+
+
 nagios-plugins.js is a javascript file that contains sample code for generating nagios settings that the plugins use
 
 ```
