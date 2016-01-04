@@ -266,6 +266,10 @@ define([], function() {
                 "id": { label: "ID (only LB487)", type: "int" },
                 "name": { label: "Name (only LB487)", type: "string" },
                 "allow_multiple": true
+            },
+            "ignored_types": {
+                "ignored_type": { label: "Typ", type: "string" },
+                "allow_multiple": true
             }
         }
     }
