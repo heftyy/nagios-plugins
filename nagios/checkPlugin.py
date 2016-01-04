@@ -14,6 +14,7 @@ class CheckPlugin(NagiosPlugin):
 
     def __init__(self):
         super(CheckPlugin, self).__init__()
+        self.host = {}
         self.snmp_requester = {}
 
     @staticmethod
@@ -33,7 +34,6 @@ class CheckPlugin(NagiosPlugin):
                 return self.validate_value_gt(value, settings)
 
         return NagiosReturnValues.state_unknown
-
 
     @staticmethod
     def validate_value_lt(value, settings):
@@ -77,7 +77,6 @@ class CheckPlugin(NagiosPlugin):
     @staticmethod
     def validate_value_gt(value, settings):
         warning = critical = None
-
 
         if 'warning' in settings:
             warning = settings['warning']
@@ -131,6 +130,16 @@ class CheckPlugin(NagiosPlugin):
 
         return NagiosReturnValues.state_ok
 
+    def check_snmp(self, settings):
+        snmp_config = settings.get_snmp_config()
+        self.snmp_requester = SnmpRequester(
+            settings.get_ip_address(),
+            snmp_config['communityRo'],
+            snmp_config['snmpVersion']
+        )
+
+        return self.snmp_requester.init_connection()
+
     def run(self, options, host):
 
         if not host.node_id:
@@ -146,14 +155,7 @@ class CheckPlugin(NagiosPlugin):
 
         settings = NagiosSettings(resp.content)
 
-        snmp_config = settings.get_snmp_config()
-        self.snmp_requester = SnmpRequester(
-            settings.get_ip_address(),
-            snmp_config['communityRo'],
-            snmp_config['snmpVersion']
-        )
-
-        if self.snmp_requester.init_connection():
+        if self.check_snmp(settings):
             print ""
 
             script_return_value = self.check(settings)

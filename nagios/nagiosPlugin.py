@@ -69,7 +69,7 @@ class NagiosPlugin(object):
             print e.message
             sys.exit(e)
 
-    def run(self):
+    def run(self, options, host):
         raise NotImplementedError("Please implement your plugin (run method).")
 
     def add_arguments(self, parser):

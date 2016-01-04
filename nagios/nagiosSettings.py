@@ -83,3 +83,6 @@ class NagiosSettings(object):
 
     def get_ignored_types(self):
         return self.get_setting('ignored_types')
+
+    def get_dns(self):
+        return self.get_setting('dns')
