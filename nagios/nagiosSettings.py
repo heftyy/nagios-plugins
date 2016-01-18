@@ -1,8 +1,7 @@
 from nagios.json_dict_decode import _decode_dict
+import json
 
 __author__ = 'szymon'
-
-import json
 
 
 class NagiosSettings(object):
@@ -86,3 +85,6 @@ class NagiosSettings(object):
 
     def get_dns(self):
         return self.get_setting('dns')
+
+    def get_http(self):
+        return self.get_setting('http')

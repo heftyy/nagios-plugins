@@ -95,7 +95,7 @@ class CheckTraffic(CheckPlugin):
         else:
             itf_alias = ''
 
-        print "transfer na interfejse %s (%s) = %d Mbit/s" % (itf_description, itf_alias, self.kilobits_to_megabits(traffic))
+        print "transfer na interfejse %s (%s) = %f Mbit/s" % (itf_description, itf_alias, self.kilobits_to_megabits(traffic))
 
         return traffic
 
@@ -103,12 +103,14 @@ class CheckTraffic(CheckPlugin):
     def validate_traffic(itf, traffic):
         traffic_min = traffic_max = traffic_min_warning = traffic_max_warning = None
 
-        if 'min' and 'max' in itf:
+        if 'min' in itf:
             traffic_min = int(itf['min'])
+        if 'max' in itf:
             traffic_max = int(itf['max'])
 
-        if 'warning_min' and 'warning_max' in itf:
+        if 'warning_min' in itf:
             traffic_min_warning = int(itf['warning_min'])
+        if 'warning_max' in itf:
             traffic_max_warning = int(itf['warning_max'])
 
         if traffic_min is not None and traffic_max is not None:

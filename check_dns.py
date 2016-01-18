@@ -6,7 +6,7 @@ from nagios.checkPlugin import CheckPlugin
 from nagios.nagiosReturnValues import NagiosReturnValues
 
 
-class CheckPort(CheckPlugin):
+class CheckDns(CheckPlugin):
 
     def check_snmp(self, settings):
         # ignore snmp check
@@ -37,4 +37,4 @@ class CheckPort(CheckPlugin):
 
 
 if __name__ == '__main__':
-    CheckPort().start()
+    CheckDns().start()

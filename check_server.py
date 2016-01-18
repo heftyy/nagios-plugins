@@ -152,7 +152,8 @@ class CheckServer(CheckPlugin):
 
             if key in server_data.__dict__:
                 status = self.validate_value(server_data[key], settings)
-                print "%s: %s" % (key, server_data[key])
+                if status != NagiosReturnValues.state_ok:
+                    print "%s: %s" % (key, server_data[key])
                 status_list.append(status)
             else:
                 status_list.append(NagiosReturnValues.state_unknown)
@@ -163,7 +164,8 @@ class CheckServer(CheckPlugin):
                 for storage in storage_list.values():
                     storage_used_percent = int((float(storage.used) / storage.size) * 100)
                     status = self.validate_value_lt(storage_used_percent, server_settings['storage_used'])
-                    print "zajetosc dysku %s: %s" % (storage.description, storage_used_percent)
+                    if status != NagiosReturnValues.state_ok:
+                        print "zajetosc dysku %s: %s" % (storage.description, storage_used_percent)
                     status_list.append(status)
             else:
                 status_list.append(NagiosReturnValues.state_unknown)
@@ -187,6 +189,7 @@ class CheckServer(CheckPlugin):
             if validate != NagiosReturnValues.state_ok:
                 return validate
 
+        print 'Server OK'
         return NagiosReturnValues.state_ok
 
 
