@@ -95,7 +95,7 @@ class CheckTraffic(CheckPlugin):
         else:
             itf_alias = ''
 
-        print "transfer na interfejse %s (%s) = %f Mbit/s" % (itf_description, itf_alias, self.kilobits_to_megabits(traffic))
+        print "transfer na interfejse %s (%s) = %.2f Mbit/s" % (itf_description, itf_alias, self.kilobits_to_megabits(traffic))
 
         return traffic
 
