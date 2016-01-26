@@ -36,7 +36,7 @@ class CheckTraffic(CheckPlugin):
 
     def get_traffic(self, itf, snmp_version):
         if 'itfIndex' not in itf:
-            return
+            return 0
 
         itf_index = itf['itfIndex']
 
