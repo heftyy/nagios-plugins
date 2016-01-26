@@ -35,6 +35,9 @@ class CheckTraffic(CheckPlugin):
         return float(traffic_in_kbits / 1000)
 
     def get_traffic(self, itf, snmp_version):
+        if 'itfIndex' not in itf:
+            return
+
         itf_index = itf['itfIndex']
 
         traffic_oid = None
