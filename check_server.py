@@ -49,7 +49,7 @@ class Server():
         self.swap_available = swap_available
         self.memory_total = memory_total
         self.memory_unused = memory_unused
-        self.memory_free = memory_free
+        self.memory_free = memory_free - swap_size
         self.memory_shared = memory_shared
         self.memory_buffered = memory_buffered
         self.memory_cached = memory_cached
@@ -88,17 +88,17 @@ class CheckServer(CheckPlugin):
                 float(server_data[ONE_MINUTE_LOAD_OID]) / 100,
                 float(server_data[FIVE_MINUTE_LOAD_OID]) / 100,
                 float(server_data[FIFTEEN_MINUTE_LOAD_OID]) / 100,
-                server_data[USER_CPU],
-                server_data[SYSTEM_CPU],
-                server_data[IDLE_CPU],
-                server_data[SWAP_SIZE],
-                server_data[SWAP_AVAILABLE],
-                server_data[MEMORY_TOTAL],
-                server_data[MEMORY_UNUSED],
-                server_data[MEMORY_FREE],
-                server_data[MEMORY_SHARED],
-                server_data[MEMORY_BUFFERED],
-                server_data[MEMORY_CACHED]
+                server_data[USER_CPU] if USER_CPU in server_data else '',
+                server_data[SYSTEM_CPU] if SYSTEM_CPU in server_data else '',
+                server_data[IDLE_CPU] if IDLE_CPU in server_data else '',
+                server_data[SWAP_SIZE] if SWAP_SIZE in server_data else '',
+                server_data[SWAP_AVAILABLE] if SWAP_AVAILABLE in server_data else '',
+                server_data[MEMORY_TOTAL] if MEMORY_TOTAL in server_data else '',
+                server_data[MEMORY_UNUSED] if MEMORY_UNUSED in server_data else '',
+                server_data[MEMORY_FREE] if MEMORY_FREE in server_data else '',
+                server_data[MEMORY_SHARED] if MEMORY_SHARED in server_data else '',
+                server_data[MEMORY_BUFFERED] if MEMORY_BUFFERED in server_data else '',
+                server_data[MEMORY_CACHED] if MEMORY_CACHED in server_data else ''
             )
 
         else:
