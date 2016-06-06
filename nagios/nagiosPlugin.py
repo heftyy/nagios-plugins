@@ -29,6 +29,7 @@ class NagiosPlugin(object):
         parser.add_argument('-p', '--port', action="store", dest="port", help="Port")
 
         parser.add_argument('--service_output', action="store", dest="service_output", help="Service output"),
+        parser.add_argument('--long_service_output', action="store", dest="long_service_output", help="Long service output"),
         parser.add_argument('--service_state', action="store", dest="service_state", help="Service state"),
 
         parser.add_argument('-C', '--community', action="store", dest="community", help="SNMP community"),

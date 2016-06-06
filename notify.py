@@ -45,11 +45,16 @@ class NotifyPlugin(NagiosPlugin):
         print('host output %s' % host.output)
         print('service output %s' % options.service_output)
 
+        if len(options.long_service_output) > 0:
+            service_output = options.long_service_output
+        else:
+            service_output = options.service_output
+
         # service notification
-        if options.service_state != '$':
+        if service_output != '$':
             parsed_output = None
-            if options.service_output is not None:
-                output = options.service_output
+            if service_output is not None:
+                output = service_output
                 parsed_output = self.parse_output(output)
 
             if parsed_output and len(parsed_output) > 0:
@@ -61,7 +66,7 @@ class NotifyPlugin(NagiosPlugin):
             else:
                 self.send_notification(host,
                                        options.service_state,
-                                       options.service_output,
+                                       service_output,
                                        "service-%s" % options.notification_type)
 
         else:
@@ -90,7 +95,7 @@ class NotifyPlugin(NagiosPlugin):
 
     def add_arguments(self, parser):
         parser.add_argument(
-            '--type', action="store", dest="notification_type", help="Notification type")
+                '--type', action="store", dest="notification_type", help="Notification type")
 
 
 if __name__ == '__main__':
