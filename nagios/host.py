@@ -1,5 +1,4 @@
 import os
-import pxssh
 
 
 class NagiosHost():
@@ -15,17 +14,6 @@ class NagiosHost():
         self.password = options.password
 
         self.node_id = options.node_id
-
-    def ssh_login(self):
-        if not self.is_reachable():
-            return False
-
-        s = pxssh.pxssh()
-        s.login(self.address, self.login, self.password)
-        s.sendline("uptime")
-        s.prompt()
-        print s.before
-        s.logout()
 
     def is_reachable(self):
         ret = os.system("ping -c 1 %s" % self.address)
