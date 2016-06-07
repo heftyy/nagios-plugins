@@ -94,8 +94,12 @@ class NotifyPlugin(NagiosPlugin):
         print resp
 
     def add_arguments(self, parser):
-        parser.add_argument(
-                '--type', action="store", dest="notification_type", help="Notification type")
+        parser.add_argument('--type', action="store", dest="notification_type", help="Notification type")
+
+        parser.add_argument('--service_output', action="store", dest="service_output", help="Service output")
+        parser.add_argument('--long_service_output', action="store", dest="long_service_output", help="Long output")
+        parser.add_argument('--service_state', action="store", dest="service_state", help="Service state")
+        parser.add_argument('--service_name', action="store", dest="service_name", help="Service name")
 
 
 if __name__ == '__main__':
