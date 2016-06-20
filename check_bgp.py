@@ -30,7 +30,7 @@ class CheckBGP(CheckPlugin):
         bgp_walk_results = self.snmp_requester.do_walk(request_bgp_oid)
         if bgp_walk_results and len(bgp_walk_results) > 0:
             for oid, value in bgp_walk_results.items():
-                ident = oid[len(oid) - 4:len(oid)].prettyPrint()
+                ident = str(oid[len(oid) - 4:len(oid)])
 
                 if ident not in bgp_dict:
                     bgp_dict[ident] = BgpSession()

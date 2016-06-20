@@ -128,7 +128,7 @@ class SnmpRequester(object):
 
         if var_binds:
             for oid, value in var_binds.items():
-                if oid.prettyPrint().startswith(walk_oid.prettyPrint()):
+                if str(oid).startswith(str(walk_oid)):
                     result[oid] = value
 
         return result

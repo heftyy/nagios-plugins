@@ -45,7 +45,7 @@ class NotifyPlugin(NagiosPlugin):
         print('host output %s' % host.output)
         print('service output %s' % options.service_output)
 
-        if len(options.long_service_output) > 0:
+        if options.long_service_output and len(options.long_service_output) > 0:
             service_output = options.long_service_output
         else:
             service_output = options.service_output

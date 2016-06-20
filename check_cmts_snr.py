@@ -1,6 +1,5 @@
 #!/usr/bin/python
 import json
-from operator import attrgetter
 import re
 
 from pysnmp.proto.rfc1902 import ObjectName
