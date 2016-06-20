@@ -4,7 +4,7 @@ import json
 
 
 for arg in sys.argv:
-    if arg.startsith('!'):
+    if arg.startswith('!'):
         try:
             obj = json.loads(arg[1:])
             print obj
