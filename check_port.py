@@ -41,7 +41,10 @@ class CheckPort(CheckPlugin):
 
         for itf in interfaces:
             try:
-                status = self.get_port_status(itf)
+                if 'itfIndex' in itf:
+                    status = self.get_port_status(itf)
+                else:
+                    continue
             except ValueError as e:
                 print "ValueError %s" % e
                 return NagiosReturnValues.state_unknown
