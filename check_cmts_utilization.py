@@ -86,7 +86,7 @@ class CheckCmtsutilization(CheckPlugin):
         if fn_results and len(fn_results) > 0:
             for oid, value in fn_results.items():
                 last = oid[len(oid) - 1]
-                itf = Interface(last, oid)
+                itf = Interface(value, oid)
 
                 interfaces[itf.index] = itf
         else:
