@@ -54,6 +54,7 @@ class CheckPort(CheckPlugin):
 
             # print "status on itf: %s = %d" % (itf['itfIndex'], status)
 
+        print 'PORT OK'
         return NagiosReturnValues.state_ok
 
 
