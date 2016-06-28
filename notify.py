@@ -58,7 +58,7 @@ class NotifyPlugin(NagiosPlugin):
             service_output = options.service_output
 
         # service notification
-        if service_output != '$':
+        if options.service_state != '$':
             parsed_output = None
             if service_output is not None:
                 output = service_output
