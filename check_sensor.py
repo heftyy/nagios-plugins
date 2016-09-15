@@ -3,6 +3,7 @@
 from pysnmp.proto.rfc1902 import ObjectName
 from nagios.checkPlugin import CheckPlugin
 from nagios.nagiosReturnValues import NagiosReturnValues
+import requests
 
 LAN_CONTROLLER_IN4 = '1.3.6.1.4.1.17095.3.11.0'
 LAN_CONTROLLER_IN6 = '1.3.6.1.4.1.17095.3.13.0'
@@ -65,7 +66,6 @@ class CheckSensor(CheckPlugin):
         return self.validate_status(sensor_config, temperature)
 
     def read_lb487(self, sensor_config):
-
         request_oid = "%s.%d.1" % (LB487, sensor_config['id'])
 
         temperature = float(self.get_sensor_value(request_oid)) / 100
@@ -73,9 +73,51 @@ class CheckSensor(CheckPlugin):
         status = self.validate_status(sensor_config, temperature)
 
         if status != NagiosReturnValues.state_ok:
-            print "temperatura %s: %s (%s / %s)" % (sensor_config['name'], temperature, sensor_config['warning'], sensor_config['critical'])
+            print "temperatura %s: %s (%s / %s)" % (sensor_config['name'], temperature,
+                                                    sensor_config['warning'], sensor_config['critical'])
 
         return status
+
+    @staticmethod
+    def read_moniti(node):
+        url = "http://%s/data.html?analog=yes&digital=yes" % node['ipaddr']
+        resp = requests.get(url, params=None)
+        if resp.status_code != 200:
+            print resp.content
+            return NagiosReturnValues.state_unknown
+
+        json = resp.json()
+        statuses = []
+
+        for analog in json['analog']:
+            state = int(analog['state'])
+            if state != 0:
+                print "%s %s %s" % (analog['name'], analog['value'], analog['unit'])
+
+            if state == -2 or state == 2:
+                statuses.append(NagiosReturnValues.state_critical)
+            elif state == -1 or state == 1:
+                statuses.append(NagiosReturnValues.state_warning)
+            elif state == 126:
+                statuses.append(NagiosReturnValues.state_unknown)
+            else:
+                statuses.append(NagiosReturnValues.state_ok)
+
+        for digital in json['digital']:
+            state = int(digital['state'])
+            if state != 0:
+                print "%s" % (digital['name'])
+
+            if state == 1:
+                statuses.append(NagiosReturnValues.state_critical)
+            elif state == 2:
+                statuses.append(NagiosReturnValues.state_warning)
+            elif state == 3:
+                statuses.append(NagiosReturnValues.state_warning)
+            else:
+                statuses.append(NagiosReturnValues.state_ok)
+
+        return statuses
 
     def get_sensor_status(self, sensor_config):
         status = NagiosReturnValues.state_ok
@@ -93,12 +135,24 @@ class CheckSensor(CheckPlugin):
         return status
 
     def check(self, settings):
+        # special case for special device
+        if settings.device['node']['netDevice']['type']['name'] == 'Moniti':
+            try:
+                statuses = self.read_moniti(settings.device['node'])
+                status = self.get_device_status(statuses)
+                if status == NagiosReturnValues.state_ok:
+                    print "Sensor OK"
+                return status
+            except ValueError as e:
+                print "ValueError %s" % e
+                return NagiosReturnValues.state_unknown
+
         sensors = settings.get_sensors()
+
+        statuses = []
 
         if not sensors:
             return NagiosReturnValues.state_ok
-
-        statuses = []
 
         for sensor in sensors:
             try:
